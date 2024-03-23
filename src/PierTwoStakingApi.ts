@@ -20,8 +20,8 @@ export enum MnemonicStatus {
 }
 
 export const URL = {
-  MAINNET: '', //TODO: add deployed mainnet url
-  TESTNET: '' //TODO: add deployed testnet url
+  MAINNET: 'https://gw-1.api.test.piertwo.io/docs', //TODO: add deployed mainnet url
+  TESTNET: 'https://gw-1.api.test.piertwo.io/docs' //TODO: add deployed testnet url
 }
 
 const DEFAULT_CHECK_INTERVAL = 5000;

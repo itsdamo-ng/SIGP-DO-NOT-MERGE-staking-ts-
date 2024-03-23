@@ -11,8 +11,8 @@ A JS development kit with supported TypeScript typings.
 
 ### PierTwoStakingApi
 The main class for interacting with the PierTwo staking platform. 
-All endpoints in the [PierTwo Staking Api](https://gw-2.api.test.piertwo.io/docs) are implemented.
-Read [full documentation here](https://gw-2.api.test.piertwo.io/docs).
+All endpoints in the [PierTwo Staking Api](https://gw-1.api.test.piertwo.io/docs) are implemented.
+Read [full documentation here](https://staking-ts.vercel.app/).
 
 ```javascript
 
