@@ -14,7 +14,7 @@
   },
   "scripts": {
     "generate": "yarn ts-node scripts/generateSdk",
-    "lint": "yarn lint",
+    "lint": "yarn eslint",
     "build": "yarn tsc",
     "build:docs": "typedoc src/PierTwoStakingApi.ts --plugin typedoc-plugin-missing-exports"
   },
