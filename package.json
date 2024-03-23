@@ -1,0 +1,22 @@
+{
+  "name": "@pier_two/staking-ts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "eslint": "^8.57.0",
+    "swagger-typescript-api": "^13.0.3",
+    "ts-node": "^10.9.2",
+    "typedoc-plugin-missing-exports": "^2.2.0",
+    "typescript": "^5.4.3",
+    "typescript-eslint": "^7.3.1"
+  },
+  "scripts": {
+    "generate": "yarn ts-node scripts/generateSdk",
+    "build:docs": "typedoc src/PierTwoStakingApi.ts --plugin typedoc-plugin-missing-exports"
+  },
+  "dependencies": {
+    "typedoc": "^0.25.12"
+  }
+}
