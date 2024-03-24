@@ -1,4 +1,7 @@
-import { Api } from "./PierTwoStakingApiBase";
+import { encodeFunctionData } from 'viem'
+
+import { Api, ValidatorDepositJson } from "./PierTwoStakingApiBase";
+import { ethereumBatchDeposit } from "../abi/ethereumBatchDeposit";
 
 export enum EthereumValidatorStatus {
   WAITING_DEPOSIT_DATA_RETRIEVAL = 'WAITING_DEPOSIT_DATA_RETRIEVAL',
@@ -20,8 +23,17 @@ export enum MnemonicStatus {
 }
 
 export const URL = {
-  MAINNET: 'https://gw-1.api.test.piertwo.io/docs', //TODO: add deployed mainnet url
-  TESTNET: 'https://gw-1.api.test.piertwo.io/docs' //TODO: add deployed testnet url
+  MAINNET: 'https://gw-1.api.test.piertwo.io', //TODO: add deployed mainnet url
+  TESTNET: 'https://gw-1.api.test.piertwo.io' //TODO: add deployed testnet url
+}
+
+export const BATCH_DEPOSIT_CONTRACT_ADDRESS = {
+  ETHEREUM_MAINNET: '0x12EB6257b03Bc63F9b0121FEc484150A6aDb0De7',
+  ETHEREUM_TESNET: 'TODO'
+}
+
+export const ABI = {
+  ETHEREUM_BATCH_DEPOSIT: ethereumBatchDeposit
 }
 
 const DEFAULT_CHECK_INTERVAL = 5000;
@@ -98,11 +110,10 @@ export class PierTwoStakingApi extends Api<null> {
       return new Promise(resolve => {
 
         const check = async () => {
-          const stake = await networkModule.getStake(args.stakeId);
+          const { data } = await networkModule.getStake(args.stakeId);
 
-          console.log(stake)
-          const allStatusesMatch = stake.data?.validators.every(v => {
-            v.status === args.desiredStatus
+          const allStatusesMatch = data.validators.every(v => {
+            return v.status === args.desiredStatus
           })
 
           if(allStatusesMatch){
@@ -116,6 +127,35 @@ export class PierTwoStakingApi extends Api<null> {
         }
 
         check();
+      })
+    },
+
+    /**
+     * @description generate call data for a batch validator deposit
+     * the data field returned from `ethereum.getDepositDataForStake` can be 
+     * passed to this function
+     *
+     * @tags utils
+     */
+    generateBatchDepositCallData(args: {
+      depositData: ValidatorDepositJson[]
+    }) {
+      const pubkeys: `0x${string}`[] = [];
+      const withdrawalCredentials: `0x${string}`[] = [];
+      const signatures: `0x${string}`[] = [];
+      const depositDataRoots: `0x${string}`[] = [];
+
+      for(const data of args.depositData) {
+        pubkeys.push(`0x${data.pubkey}`);
+        withdrawalCredentials.push(`0x${data.withdrawal_credentials}`);
+        signatures.push(`0x${data.signature}`);
+        depositDataRoots.push(`0x${data.deposit_data_root}`);
+      }
+
+      return encodeFunctionData({
+        abi: ethereumBatchDeposit,
+        functionName: 'batchDeposit',
+        args: [pubkeys, withdrawalCredentials, signatures, depositDataRoots]
       })
     }
   }
