@@ -9,7 +9,19 @@
  * ---------------------------------------------------------------
  */
 
-export type ApiResponseBase = object;
+type UtilRequiredKeys<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
+
+export interface PaginationData {
+  totalCount: number;
+  pageSize: number;
+  pageNumber: number;
+}
+
+export interface ApiResponseBase {
+  data: object;
+  pagination?: PaginationData;
+  message?: string;
+}
 
 export interface GetAccountResponse {
   /** @example "Pierre Toosen" */
@@ -97,19 +109,28 @@ export interface StakeDetailsWithValidators {
   validators: Validator[];
 }
 
-export type ValidatorDepositJson = object;
-
-export interface PaginationData {
-  totalCount: number;
-  pageSize: number;
-  pageNumber: number;
+export interface ValidatorDepositJson {
+  pubkey: string;
+  withdrawal_credentials: string;
+  amount: number;
+  signature: string;
+  deposit_message_root: string;
+  deposit_data_root: string;
+  fork_version: string;
+  network_name: string;
+  deposit_cli_version: string;
 }
 
-export interface PaginatedApiResponseBase {
-  pagination: PaginationData;
+export interface ValidatorStatusCounts {
+  ACTIVE: number;
+  ACTIVE_EXITING: number;
+  EXITED: number;
+  PENDING_ACTIVATION: number;
+  WAITING_DEPOSIT: number;
+  WAITING_DEPOSIT_DATA_RETRIEVAL: number;
+  WAITING_KEYGEN: number;
+  WAITING_VC_DEPLOYMENT: number;
 }
-
-export type ValidatorStatusCounts = object;
 
 export interface StakeWithValidatorStatusCounts {
   stakeId: number;
@@ -375,8 +396,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     getAccount: (params: RequestParams = {}) =>
       this.request<
-        ApiResponseBase & {
-          data?: GetAccountResponse;
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetAccountResponse;
         },
         any
       >({
@@ -396,8 +417,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     createStake: (data: CreateStakeDto, params: RequestParams = {}) =>
       this.request<
-        ApiResponseBase & {
-          data?: CreateStakeResponse;
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CreateStakeResponse;
         },
         any
       >({
@@ -418,8 +439,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     getStake: (stakeId: string, params: RequestParams = {}) =>
       this.request<
-        ApiResponseBase & {
-          data?: StakeDetailsWithValidators;
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: StakeDetailsWithValidators;
         },
         any
       >({
@@ -438,8 +459,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     getDepositDataForStake: (stakeId: string, params: RequestParams = {}) =>
       this.request<
-        ApiResponseBase & {
-          data?: ValidatorDepositJson[];
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: ValidatorDepositJson[];
         },
         any
       >({
@@ -463,8 +484,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       params: RequestParams = {},
     ) =>
       this.request<
-        PaginatedApiResponseBase & {
-          data?: StakeDetailsWithValidators[];
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: StakeDetailsWithValidators[];
         },
         any
       >({
@@ -484,8 +505,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     getStakesWithValidatorStatusCounts: (params: RequestParams = {}) =>
       this.request<
-        ApiResponseBase & {
-          data?: StakeWithValidatorStatusCounts[];
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: StakeWithValidatorStatusCounts[];
         },
         any
       >({
@@ -504,8 +525,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     genPresignedExitMsg: (data: GenPresignedExitMsgDto, params: RequestParams = {}) =>
       this.request<
-        ApiResponseBase & {
-          data?: ValidatorExitMessageResp[];
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: ValidatorExitMessageResp[];
         },
         any
       >({
@@ -526,8 +547,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     broadcastPresignedExitMessage: (data: ValidatorExitMessage, params: RequestParams = {}) =>
       this.request<
-        ApiResponseBase & {
-          data?: BeaconNodeVoluntaryExitResponse;
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: BeaconNodeVoluntaryExitResponse;
         },
         any
       >({
@@ -548,8 +569,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     bulkWithdraw: (data: GenPresignedExitMsgDto, params: RequestParams = {}) =>
       this.request<
-        ApiResponseBase & {
-          data?: BulkWithdrawError[];
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: BulkWithdrawError[];
         },
         any
       >({

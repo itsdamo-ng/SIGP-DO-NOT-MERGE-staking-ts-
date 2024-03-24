@@ -1,6 +1,6 @@
 {
   "name": "@pier_two/staking-ts",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "index.js",
   "types": "index.d.ts",
   "license": "MIT",
@@ -20,5 +20,7 @@
     "build": "yarn tsc",
     "build:docs": "typedoc src/PierTwoStakingApi.ts --plugin typedoc-plugin-missing-exports"
   },
-  "dependencies": {}
+  "dependencies": {
+    "viem": "^2.8.18"
+  }
 }
