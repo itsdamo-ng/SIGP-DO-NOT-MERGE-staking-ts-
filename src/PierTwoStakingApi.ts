@@ -23,13 +23,13 @@ export enum MnemonicStatus {
 }
 
 export const URL = {
-  MAINNET: 'https://gw-1.api.test.piertwo.io', //TODO: add deployed mainnet url
-  TESTNET: 'https://gw-1.api.test.piertwo.io' //TODO: add deployed testnet url
+  MAINNET: 'https://gw-1.api.piertwo.io/',
+  TESTNET: 'https://gw-1.api.test.piertwo.io'
 }
 
 export const BATCH_DEPOSIT_CONTRACT_ADDRESS = {
   ETHEREUM_MAINNET: '0x12EB6257b03Bc63F9b0121FEc484150A6aDb0De7',
-  ETHEREUM_TESNET: 'TODO'
+  ETHEREUM_TESNET: '0x16eD4d1F6c4335352F2A20994d4880A8A9609d96'
 }
 
 export const ABI = {
