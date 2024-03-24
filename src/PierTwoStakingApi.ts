@@ -1,7 +1,7 @@
 import { encodeFunctionData } from 'viem'
 
 import { Api, ValidatorDepositJson } from "./PierTwoStakingApiBase";
-import { ethereumBatchDeposit } from "../abi/ethereumBatchDeposit";
+import { ethereumBatchDeposit } from "./abi/ethereumBatchDeposit";
 
 export enum EthereumValidatorStatus {
   WAITING_DEPOSIT_DATA_RETRIEVAL = 'WAITING_DEPOSIT_DATA_RETRIEVAL',
