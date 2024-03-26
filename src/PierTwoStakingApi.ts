@@ -1,10 +1,14 @@
 import { encodeFunctionData } from 'viem'
 
-import { Api, ValidatorDepositJson } from "./PierTwoStakingApiBase";
+import { 
+  Api, 
+  ValidatorDepositJson,
+  ValidatorWithStakeDetails
+} from "./PierTwoStakingApiBase";
+
 import { ethereumBatchDeposit } from "./abi/ethereumBatchDeposit";
 
 export enum EthereumValidatorStatus {
-  WAITING_DEPOSIT_DATA_RETRIEVAL = 'WAITING_DEPOSIT_DATA_RETRIEVAL',
   WAITING_KEYGEN = 'WAITING_KEYGEN',
   WAITING_DEPOSIT = 'WAITING_DEPOSIT',
   WAITING_VC_DEPLOYMENT = 'WAITING_VC_DEPLOYMENT',
@@ -128,6 +132,28 @@ export class PierTwoStakingApi extends Api<null> {
 
         check();
       })
+    },
+
+    /**
+     * @description converts data fetched from `ethereum.getOrderedValidators` to be used with 
+     * `utils.generateBatchDepositCallData`
+     *
+     * @tags utils
+     */
+    validatorWithStakeDetailsToDepositDataJson(
+      validatorWithStakeDetails: ValidatorWithStakeDetails
+    ): ValidatorDepositJson {
+      return {
+        pubkey: validatorWithStakeDetails.pubkey,
+        withdrawal_credentials: validatorWithStakeDetails.withdrawal_credentials,
+        amount: validatorWithStakeDetails.amount,
+        signature: validatorWithStakeDetails.signature,
+        deposit_message_root: validatorWithStakeDetails.deposit_message_root,
+        deposit_data_root: validatorWithStakeDetails.deposit_data_root,
+        fork_version: validatorWithStakeDetails.fork_version,
+        network_name: validatorWithStakeDetails.network_name,
+        deposit_cli_version: validatorWithStakeDetails.deposit_cli_version,
+      }
     },
 
     /**

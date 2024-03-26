@@ -127,7 +127,6 @@ export interface ValidatorStatusCounts {
   EXITED: number;
   PENDING_ACTIVATION: number;
   WAITING_DEPOSIT: number;
-  WAITING_DEPOSIT_DATA_RETRIEVAL: number;
   WAITING_KEYGEN: number;
   WAITING_VC_DEPLOYMENT: number;
 }
@@ -136,6 +135,22 @@ export interface StakeWithValidatorStatusCounts {
   stakeId: number;
   reference: string;
   validatorStatusCounts: ValidatorStatusCounts;
+}
+
+export interface ValidatorWithStakeDetails {
+  pubkey: string;
+  withdrawal_credentials: string;
+  amount: number;
+  signature: string;
+  deposit_message_root: string;
+  deposit_data_root: string;
+  fork_version: string;
+  network_name: string;
+  deposit_cli_version: string;
+  status: string;
+  withdrawalAddress: string;
+  reference: string;
+  label: string;
 }
 
 export interface Message {
@@ -503,7 +518,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetStakesWithValidatorStatusCounts
      * @request GET:/ethereum/stakesWithValidatorStatusCounts
      */
-    getStakesWithValidatorStatusCounts: (params: RequestParams = {}) =>
+    getStakesWithValidatorStatusCounts: (
+      query?: {
+        reference?: string;
+        withdrawalAddress?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
           data: StakeWithValidatorStatusCounts[];
@@ -512,6 +533,36 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       >({
         path: `/ethereum/stakesWithValidatorStatusCounts`,
         method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Fetch validators for your account
+     *
+     * @tags ethereum
+     * @name GetOrderedValidators
+     * @request GET:/ethereum/orderedValidators
+     */
+    getOrderedValidators: (
+      query: {
+        count: string;
+        reference?: string;
+        withdrawalAddress?: string;
+        status?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: ValidatorWithStakeDetails[];
+        },
+        any
+      >({
+        path: `/ethereum/orderedValidators`,
+        method: "GET",
+        query: query,
         format: "json",
         ...params,
       }),
