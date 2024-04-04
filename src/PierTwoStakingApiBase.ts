@@ -183,6 +183,88 @@ export interface BulkWithdrawError {
   message: string;
 }
 
+export interface WaitTimes {
+  entryTimes: object;
+  exitTimes: object;
+  activeValidators: number;
+}
+
+export interface ValidatorInfo {
+  pubKey: string;
+  index: string;
+  name: string;
+  status: string;
+  depositTime: number;
+}
+
+export interface ValidatorStat {
+  index: number;
+  day: number;
+  dayStart: number;
+  consensusRewards: string;
+  executionRewards: string;
+}
+
+export interface ValidatorPerformance {
+  index: number;
+  el1H: string;
+  cl1H: string;
+  el1D: string;
+  cl1D: string;
+  el7D: string;
+  cl7D: string;
+  el31D: string;
+  cl31D: string;
+  el1Y: string;
+  cl1Y: string;
+  elTotal: string;
+  clTotal: string;
+}
+
+export interface CustomerDashboardSummary {
+  totalValidators: number;
+  performanceTotal: string;
+  totalActive: number;
+  totalActivating: number;
+  totalDeactivating: number;
+  numAccounts: number;
+}
+
+export interface CustomerDashboardAccount {
+  totalValidators: number;
+  performanceTotal: string;
+  totalActive: number;
+  totalActivating: number;
+  totalDeactivating: number;
+  name: string;
+  performance7D: string;
+}
+
+export interface CustomerDashboard {
+  summary: CustomerDashboardSummary;
+  accounts: CustomerDashboardAccount[];
+}
+
+export interface CustomerAccountStake {
+  stakeId: number;
+  name: string;
+  totalValidators: number;
+  performanceTotal: string;
+  performance7D: string;
+  status: string;
+}
+
+export interface CustomerAccount {
+  name: string;
+  performanceTotal: string;
+  performance7D: string;
+  totalValidators: number;
+  totalActive: number;
+  totalActivating: number;
+  totalDeactivating: number;
+  stakes: CustomerAccountStake[];
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -629,6 +711,128 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "POST",
         body: data,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns the estimated wait times for entering and exiting validators.
+     *
+     * @name GetValidatorWaitTimes
+     * @request GET:/ethereum/validators/waitTimes
+     */
+    getValidatorWaitTimes: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: WaitTimes;
+        },
+        any
+      >({
+        path: `/ethereum/validators/waitTimes`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ethereum
+     * @name GetValidatorInfo
+     * @summary Returns information of active validators
+     * @request GET:/ethereum/validators/info
+     */
+    getValidatorInfo: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: ValidatorInfo[];
+        },
+        any
+      >({
+        path: `/ethereum/validators/info`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ethereum
+     * @name GetValidatorDailyRewards
+     * @summary Returns daily rewards stats of active validators
+     * @request GET:/ethereum/validators/dailyRewards
+     */
+    getValidatorDailyRewards: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: ValidatorStat[];
+        },
+        any
+      >({
+        path: `/ethereum/validators/dailyRewards`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ethereum
+     * @name GetValidatorDailyPerformance
+     * @summary Returns daily performance stats of active validators
+     * @request GET:/ethereum/validators/performance
+     */
+    getValidatorDailyPerformance: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: ValidatorPerformance[];
+        },
+        any
+      >({
+        path: `/ethereum/validators/performance`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns the dashboard summary. Individual stakes are flattened
+     *
+     * @tags ethereum
+     * @name GetValidatorDashboardSummary
+     * @request GET:/ethereum/validators/dashboard
+     */
+    getValidatorDashboardSummary: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CustomerDashboard;
+        },
+        any
+      >({
+        path: `/ethereum/validators/dashboard`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns the accounts summary. Individual stakes are not flattened
+     *
+     * @tags ethereum
+     * @name GetValidatorAccountsSummary
+     * @request GET:/ethereum/validators/accounts
+     */
+    getValidatorAccountsSummary: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CustomerAccount[];
+        },
+        any
+      >({
+        path: `/ethereum/validators/accounts`,
+        method: "GET",
         format: "json",
         ...params,
       }),

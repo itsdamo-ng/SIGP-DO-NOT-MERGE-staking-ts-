@@ -4,7 +4,8 @@ import fs from 'fs';
 
 async function main() {
   const now = Date.now();
-  const specUrl = 'https://gw-1.api.test.piertwo.io/docs-json';
+  // const specUrl = 'https://gw-1.api.test.piertwo.io/docs-json';
+  const specUrl = 'http://localhost:3000/docs-json';
 
   const specResponse = await fetch(specUrl);
 
