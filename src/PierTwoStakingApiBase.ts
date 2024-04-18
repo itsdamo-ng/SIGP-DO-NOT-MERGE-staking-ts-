@@ -621,18 +621,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Fetch validators for your account
+     * @description Fetch validators for your account, in order of initial request
      *
      * @tags ethereum
      * @name GetOrderedValidators
+     * @summary Fetch validators for your account
      * @request GET:/ethereum/orderedValidators
      */
     getOrderedValidators: (
-      query: {
-        count: string;
+      query?: {
         reference?: string;
         withdrawalAddress?: string;
+        /** defaults to 100 */
+        count?: string;
         status?: string;
+        skip?: string;
       },
       params: RequestParams = {},
     ) =>
