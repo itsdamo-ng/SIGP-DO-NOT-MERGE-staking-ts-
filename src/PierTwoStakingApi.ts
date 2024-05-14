@@ -43,28 +43,40 @@ export const ABI = {
 const DEFAULT_CHECK_INTERVAL = 5000;
 
 export type ConstructorArgs = ConstructorParameters<typeof Api<null>>[0] & {
-  apiKey: string;
+  apiKey?: string;
+  jwt?: string;
 }
 
 export class PierTwoStakingApi extends Api<null> {
 
   constructor(args: ConstructorArgs) {
 
-    if(!args.apiKey) {
-      throw new Error('apiKey is required')
+    if(!args.apiKey && !args.jwt) {
+      throw new Error('apiKey or jwt is required')
     }
 
     if(!args.baseUrl) {
       throw new Error('baseUrl is required')
     }
     
+    const authHeader: {
+      'api-key'?: string;
+      'authorization'?: string;
+    } = {};
+
+    if(args.apiKey) {
+      authHeader['api-key'] = args.apiKey;
+    } else if (args.jwt) {
+      authHeader['authorization'] = `Bearer ${args.jwt}`;
+    }
+
     super({
       ...(args ? args : {}),
       baseApiParams: {
         ...(args?.baseApiParams ? args.baseApiParams : {}),
         headers: {
           ...(args?.baseApiParams?.headers ? args.baseApiParams.headers : {}),
-          'api-key': args.apiKey
+          ...authHeader
         }
       }
     });
