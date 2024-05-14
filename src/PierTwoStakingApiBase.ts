@@ -42,6 +42,13 @@ export interface GetAccountResponse {
   kycStatus: string;
 }
 
+export interface GetApiKeyDto {
+  /** @example "Default API Key" */
+  name: string;
+  /** @example "0b381d39-43b4-480f-b3c9-f3ff3d19cb0a" */
+  key: string;
+}
+
 export interface StakeDetails {
   stakeId: number;
   customerId: number;
@@ -499,6 +506,26 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         any
       >({
         path: `/account`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Fetch api keys for your account
+     *
+     * @tags account
+     * @name GetApiKeys
+     * @request GET:/account/apikeys
+     */
+    getApiKeys: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetApiKeyDto[];
+        },
+        any
+      >({
+        path: `/account/apikeys`,
         method: "GET",
         format: "json",
         ...params,
