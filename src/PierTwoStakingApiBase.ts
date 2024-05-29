@@ -90,6 +90,10 @@ export interface CreateStakeDto {
   label: string;
 }
 
+export interface DataWithMessage {
+  message: string;
+}
+
 export interface Validator {
   pubkey: string;
   withdrawal_credentials: string;
@@ -101,6 +105,7 @@ export interface Validator {
   network_name: string;
   deposit_cli_version: string;
   status: string;
+  suggestedFeeRecipient: string;
 }
 
 export interface StakeDetailsWithValidators {
@@ -136,6 +141,7 @@ export interface ValidatorStatusCounts {
   WAITING_DEPOSIT: number;
   WAITING_KEYGEN: number;
   WAITING_VC_DEPLOYMENT: number;
+  ABANDONED: number;
 }
 
 export interface StakeWithValidatorStatusCounts {
@@ -155,6 +161,7 @@ export interface ValidatorWithStakeDetails {
   network_name: string;
   deposit_cli_version: string;
   status: string;
+  suggestedFeeRecipient: string;
   withdrawalAddress: string;
   reference: string;
   label: string;
@@ -550,6 +557,26 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "POST",
         body: data,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Abandon stake request and all associated validators
+     *
+     * @tags ethereum
+     * @name AbandonStake
+     * @request PUT:/ethereum/stake/{stakeId}/abandon
+     */
+    abandonStake: (stakeId: string, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: DataWithMessage;
+        },
+        any
+      >({
+        path: `/ethereum/stake/${stakeId}/abandon`,
+        method: "PUT",
         format: "json",
         ...params,
       }),
