@@ -796,10 +796,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ethereum
      * @name GetValidatorInfo
-     * @summary Returns information of active validators
+     * @summary Fetch information of validators, returns info for all active validators if none are specified
      * @request GET:/ethereum/validators/info
      */
-    getValidatorInfo: (params: RequestParams = {}) =>
+    getValidatorInfo: (
+      query?: {
+        /** comma seperated list of validator indexes */
+        validatorIndex?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
           data: ValidatorInfo[];
@@ -808,6 +814,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       >({
         path: `/ethereum/validators/info`,
         method: "GET",
+        query: query,
         format: "json",
         ...params,
       }),
@@ -817,10 +824,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ethereum
      * @name GetValidatorDailyRewards
-     * @summary Returns daily rewards stats of active validators
+     * @summary Returns daily rewards stats of validators, returns stats for all active validators if none are specified
      * @request GET:/ethereum/validators/dailyRewards
      */
-    getValidatorDailyRewards: (params: RequestParams = {}) =>
+    getValidatorDailyRewards: (
+      query?: {
+        /** comma seperated list of validator indexes */
+        validatorIndex?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
           data: ValidatorStat[];
@@ -829,6 +842,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       >({
         path: `/ethereum/validators/dailyRewards`,
         method: "GET",
+        query: query,
         format: "json",
         ...params,
       }),
@@ -838,10 +852,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ethereum
      * @name GetValidatorDailyPerformance
-     * @summary Returns daily performance stats of active validators
+     * @summary Returns daily performance stats of validators, returns stats for all active validators if none are specified
      * @request GET:/ethereum/validators/performance
      */
-    getValidatorDailyPerformance: (params: RequestParams = {}) =>
+    getValidatorDailyPerformance: (
+      query: {
+        validatorIndex: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
           data: ValidatorPerformance[];
@@ -850,6 +869,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       >({
         path: `/ethereum/validators/performance`,
         method: "GET",
+        query: query,
         format: "json",
         ...params,
       }),
