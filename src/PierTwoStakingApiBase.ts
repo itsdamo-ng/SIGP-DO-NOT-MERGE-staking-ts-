@@ -237,21 +237,19 @@ export interface ValidatorPerformance {
 
 export interface CustomerDashboardSummary {
   totalValidators: number;
+  totalStakes: number;
   performanceTotal: string;
-  totalActive: number;
-  totalActivating: number;
-  totalDeactivating: number;
   numAccounts: number;
+  validatorStatusCounts: ValidatorStatusCounts;
 }
 
 export interface CustomerDashboardAccount {
   totalValidators: number;
+  totalStakes: number;
   performanceTotal: string;
-  totalActive: number;
-  totalActivating: number;
-  totalDeactivating: number;
   name: string;
   performance7D: string;
+  validatorStatusCounts: ValidatorStatusCounts;
 }
 
 export interface CustomerDashboard {
@@ -265,7 +263,7 @@ export interface CustomerAccountStake {
   totalValidators: number;
   performanceTotal: string;
   performance7D: string;
-  status: string;
+  validatorStatusCounts: ValidatorStatusCounts;
 }
 
 export interface CustomerAccount {
@@ -273,9 +271,7 @@ export interface CustomerAccount {
   performanceTotal: string;
   performance7D: string;
   totalValidators: number;
-  totalActive: number;
-  totalActivating: number;
-  totalDeactivating: number;
+  validatorStatusCounts: ValidatorStatusCounts;
   stakes: CustomerAccountStake[];
 }
 
