@@ -263,6 +263,7 @@ export interface CustomerAccountStake {
   totalValidators: number;
   performanceTotal: string;
   performance7D: string;
+  validatorStatusCounts: ValidatorStatusCounts;
 }
 
 export interface CustomerAccount {
