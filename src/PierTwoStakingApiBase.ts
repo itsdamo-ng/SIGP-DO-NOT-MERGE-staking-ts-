@@ -856,8 +856,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/ethereum/validators/performance
      */
     getValidatorDailyPerformance: (
-      query: {
-        validatorIndex: string;
+      query?: {
+        /** comma seperated list of validator indexes */
+        validatorIndex?: string;
       },
       params: RequestParams = {},
     ) =>
