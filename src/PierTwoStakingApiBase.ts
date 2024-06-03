@@ -197,10 +197,19 @@ export interface BulkWithdrawError {
   message: string;
 }
 
-export interface WaitTimes {
-  entryTimes: object;
-  exitTimes: object;
+export interface QueueStats {
+  /** @example "2 days" */
+  entryWaitingTime: string;
+  entryWaitingTimeSeconds: number;
+  /** @example "34 minutes" */
+  exitWaitingTime: string;
+  exitWaitingTimeSeconds: number;
+  avgApr7d: number;
+  avgApr31d: number;
+  apr: number;
   activeValidators: number;
+  exitingValidators: number;
+  enteringValidators: number;
 }
 
 export interface ValidatorInfo {
@@ -769,19 +778,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Returns the estimated wait times for entering and exiting validators.
+     * @description Returns the estimated wait times and other queue stats for entering and exiting validators.
      *
-     * @name GetValidatorWaitTimes
-     * @request GET:/ethereum/validators/waitTimes
+     * @tags ethereum
+     * @name GetValidatorQueueStats
+     * @request GET:/ethereum/validators/queueStats
      */
-    getValidatorWaitTimes: (params: RequestParams = {}) =>
+    getValidatorQueueStats: (params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: WaitTimes;
+          data: QueueStats;
         },
         any
       >({
-        path: `/ethereum/validators/waitTimes`,
+        path: `/ethereum/validators/queueStats`,
         method: "GET",
         format: "json",
         ...params,
