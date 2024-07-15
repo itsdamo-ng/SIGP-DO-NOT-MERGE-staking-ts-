@@ -542,6 +542,26 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+
+    /**
+     * @description Create a new user from a valid JWT
+     *
+     * @tags account
+     * @name Signup
+     * @request POST:/account/signup
+     */
+    signup: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetAccountResponse;
+        },
+        any
+      >({
+        path: `/account/signup`,
+        method: "POST",
+        format: "json",
+        ...params,
+      }),
   };
   ethereum = {
     /**
