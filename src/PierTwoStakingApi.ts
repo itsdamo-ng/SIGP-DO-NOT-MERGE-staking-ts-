@@ -27,7 +27,7 @@ export enum MnemonicStatus {
 }
 
 export const URL = {
-  MAINNET: 'https://gw-1.api.piertwo.io/',
+  MAINNET: 'https://gw-1.api.piertwo.io',
   TESTNET: 'https://gw-1.api.test.piertwo.io'
 }
 
