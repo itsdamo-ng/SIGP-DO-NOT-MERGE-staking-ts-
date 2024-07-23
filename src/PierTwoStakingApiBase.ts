@@ -226,6 +226,7 @@ export interface ValidatorStat {
   dayStart: number;
   consensusRewards: string;
   executionRewards: string;
+  ethPrice: number;
 }
 
 export interface ValidatorPerformance {
@@ -857,6 +858,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /** comma seperated list of validator indexes */
         validatorIndex?: string;
+        /** fiat currency for ethereum pricing */
+        currency?: string;
       },
       params: RequestParams = {},
     ) =>
