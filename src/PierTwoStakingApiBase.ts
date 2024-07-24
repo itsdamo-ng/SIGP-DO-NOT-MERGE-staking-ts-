@@ -106,6 +106,7 @@ export interface Validator {
   deposit_cli_version: string;
   status: string;
   suggestedFeeRecipient: string;
+  validatorIndex: number;
 }
 
 export interface StakeDetailsWithValidators {
@@ -162,6 +163,7 @@ export interface ValidatorWithStakeDetails {
   deposit_cli_version: string;
   status: string;
   suggestedFeeRecipient: string;
+  validatorIndex: number;
   withdrawalAddress: string;
   reference: string;
   label: string;
@@ -270,6 +272,7 @@ export interface CustomerDashboard {
 export interface CustomerAccountStake {
   stakeId: number;
   name: string;
+  withdrawalAddress: string;
   totalValidators: number;
   performanceTotal: string;
   performance7D: string;
