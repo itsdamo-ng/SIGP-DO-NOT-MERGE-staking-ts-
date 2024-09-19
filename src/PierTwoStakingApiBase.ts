@@ -11,15 +11,8 @@
 
 type UtilRequiredKeys<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
-export interface PaginationData {
-  totalCount: number;
-  pageSize: number;
-  pageNumber: number;
-}
-
 export interface ApiResponseBase {
   data: object;
-  pagination?: PaginationData;
   message?: string;
 }
 
@@ -40,6 +33,11 @@ export interface GetAccountResponse {
    * @example "KYC_PENDING"
    */
   kycStatus: string;
+  /**
+   * Details of agreed terms and conditions
+   * @example {"applicableTerms":"general","agreedTerms":{"29-05-2024":"2024-08-19T22:35:52.622Z"}}
+   */
+  termsAndConditions: object;
 }
 
 export interface GetApiKeyDto {
@@ -247,6 +245,14 @@ export interface ValidatorPerformance {
   clTotal: string;
 }
 
+export interface ValidatorDailyPerformanceStat {
+  consensusRewards: string;
+  executionRewards: string;
+  periodStart: number;
+  periodEnd: number;
+  ethPrice: number;
+}
+
 export interface CustomerDashboardSummary {
   totalValidators: number;
   totalStakes: number;
@@ -286,6 +292,77 @@ export interface CustomerAccount {
   totalValidators: number;
   validatorStatusCounts: ValidatorStatusCounts;
   stakes: CustomerAccountStake[];
+}
+
+export interface PaginationData {
+  totalCount: number;
+  pageSize: number;
+  pageNumber: number;
+}
+
+export interface PaginatedApiResponseBase {
+  data: object;
+  message?: string;
+  pagination: PaginationData;
+}
+
+export interface SolanaStakeAccount {
+  customerId: number;
+  stakePubkey: string;
+  fromPubkey: string;
+  stakeAuthority: string;
+  withdrawAuthority: string;
+  initialLamports: string;
+  rentExemptionAmount: string;
+  lamports: string;
+  status: string;
+  reference: string;
+  label: string;
+}
+
+export interface BuildTransactionPayloadResponseDto {
+  /**
+   * serialized transaction
+   * @example "800200080ac6f91611c...080900040200000000"
+   */
+  serialized: string;
+  /**
+   * pubkey of stake account
+   * @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY"
+   */
+  stakePubkey: string;
+  /**
+   * additional signatures to apply to transaction before submitting
+   * @example [{"pubKey":"6V2Lfg1jvanitWUKWRDLTrWvbHvsMMbRuhQ3CTKY1FAq","signature":"2bfb03d5ce6263ba0f...7a24b6d00c4682c04"}]
+   */
+  signatures: string[];
+}
+
+export interface BuildTransactionPayloadRequestDto {
+  /** @example [{"type":"createAndDelegate","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","lamports":1000000000}}] */
+  instructions: string[];
+  /** @example "ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8" */
+  feePayer: string;
+  /** @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY" */
+  stakePubkey: string;
+}
+
+export interface SolanaStakeAccountRewards {
+  stakePubkey: string;
+  dayStart: number;
+  epoch: number;
+  inflationRewardAmount: string;
+  effectiveSlot: number;
+  postBalance: string;
+  mevRewardAmount: string;
+  solPrice: number;
+}
+
+export interface StakingNetworkInfo {
+  currentEpoch: number;
+  avgInflationRewardRate: number;
+  slotIndex: number;
+  slotsInEpoch: number;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -863,6 +940,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         validatorIndex?: string;
         /** fiat currency for ethereum pricing */
         currency?: string;
+        /** unix timestamp of starting date from */
+        dateFrom?: number;
+        /** unix timestamp of ending date to */
+        dateTo?: number;
       },
       params: RequestParams = {},
     ) =>
@@ -908,6 +989,44 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * No description
+     *
+     * @tags ethereum
+     * @name GetValidatorRewardsChartData
+     * @summary Retrieve summarized validator rewards chart data
+     * @request GET:/ethereum/validators/rewardsChartData
+     */
+    getValidatorRewardsChartData: (
+      query?: {
+        /** comma seperated list of validator indexes */
+        validatorIds?: string;
+        /** unix timestamp of starting date from */
+        dateFrom?: number;
+        /** unix timestamp of ending date to */
+        dateTo?: number;
+        /** account reference to use as filter */
+        account?: string;
+        /** number of datapoints to return */
+        datapoints?: number;
+        /** currency used for price data */
+        currency?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: ValidatorDailyPerformanceStat[];
+        },
+        any
+      >({
+        path: `/ethereum/validators/rewardsChartData`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Returns the dashboard summary. Individual stakes are flattened
      *
      * @tags ethereum
@@ -942,6 +1061,110 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         any
       >({
         path: `/ethereum/validators/accounts`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+  };
+  solana = {
+    /**
+     * @description Fetch solana staking accounts associated to your account.
+     *
+     * @tags solana
+     * @name GetStakes
+     * @request GET:/solana/stakes
+     */
+    getStakes: (
+      query?: {
+        pageNumber?: number;
+        pageSize?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<PaginatedApiResponseBase, "data"> & {
+          data: SolanaStakeAccount[];
+        },
+        any
+      >({
+        path: `/solana/stakes`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Generate a stake transaction payload containing one or more instructions
+     *
+     * @tags solana
+     * @name BuildTransactionPayload
+     * @request POST:/solana/stake/buildTransaction
+     */
+    buildTransactionPayload: (data: BuildTransactionPayloadRequestDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: BuildTransactionPayloadResponseDto;
+        },
+        any
+      >({
+        path: `/solana/stake/buildTransaction`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags solana
+     * @name GetStakeAccoutDailyRewards
+     * @summary Returns daily rewards stats of specified stake accounts
+     * @request GET:/solana/stake/dailyRewards
+     */
+    getStakeAccoutDailyRewards: (
+      query: {
+        /** comma seperated list of stake account pubkeys */
+        stakePubkey: string;
+        /** fiat currency for ethereum pricing */
+        currency?: string;
+        /** unix timestamp of starting date from */
+        dateFrom?: number;
+        /** unix timestamp of ending date to */
+        dateTo?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: SolanaStakeAccountRewards[];
+        },
+        any
+      >({
+        path: `/solana/stake/dailyRewards`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns current epoch staking reward info
+     *
+     * @tags solana
+     * @name GetNetworkStakingInfo
+     * @request GET:/solana/stake/networkInfo
+     */
+    getNetworkStakingInfo: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: StakingNetworkInfo;
+        },
+        any
+      >({
+        path: `/solana/stake/networkInfo`,
         method: "GET",
         format: "json",
         ...params,
