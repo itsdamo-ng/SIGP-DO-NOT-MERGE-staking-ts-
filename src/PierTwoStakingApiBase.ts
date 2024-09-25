@@ -330,7 +330,7 @@ export interface BuildTransactionPayloadResponseDto {
    * pubkey of stake account
    * @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY"
    */
-  stakePubkey: string;
+  stakePubkey?: string;
   /**
    * additional signatures to apply to transaction before submitting
    * @example [{"pubKey":"6V2Lfg1jvanitWUKWRDLTrWvbHvsMMbRuhQ3CTKY1FAq","signature":"2bfb03d5ce6263ba0f...7a24b6d00c4682c04"}]
@@ -347,6 +347,15 @@ export interface BuildTransactionPayloadRequestDto {
   stakePubkey: string;
 }
 
+export interface StakingPerformanceSummary {
+  inflationRewardsTotal: string;
+  inflationRewards7d: string;
+  inflationRewards30d: string;
+  mevRewardsTotal: string;
+  mevRewards7d: string;
+  mevRewards30d: string;
+}
+
 export interface SolanaStakeAccountRewards {
   stakePubkey: string;
   dayStart: number;
@@ -355,6 +364,14 @@ export interface SolanaStakeAccountRewards {
   effectiveSlot: number;
   postBalance: string;
   mevRewardAmount: string;
+  solPrice: number;
+}
+
+export interface StakingRewardsChartData {
+  inflationRewards: string;
+  mevRewards: string;
+  periodStart: number;
+  periodEnd: number;
   solPrice: number;
 }
 
@@ -1009,7 +1026,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         /** number of datapoints to return */
         datapoints?: number;
         /** currency used for price data */
-        currency?: number;
+        currency?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -1120,6 +1137,34 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags solana
+     * @name GetPerformanceSummary
+     * @summary Returns performance breakdown summary
+     * @request GET:/solana/stake/performanceSummary
+     */
+    getPerformanceSummary: (
+      query?: {
+        /** comma seperated list of stake account pubkeys, will return data for all active stake accounts if none are provided */
+        stakePubkey?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: StakingPerformanceSummary;
+        },
+        any
+      >({
+        path: `/solana/stake/performanceSummary`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags solana
      * @name GetStakeAccoutDailyRewards
      * @summary Returns daily rewards stats of specified stake accounts
      * @request GET:/solana/stake/dailyRewards
@@ -1144,6 +1189,42 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         any
       >({
         path: `/solana/stake/dailyRewards`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags solana
+     * @name GetStakeRewardsChartData
+     * @summary Retrieve summarized staking rewards chart data
+     * @request GET:/solana/stake/rewardsChartData
+     */
+    getStakeRewardsChartData: (
+      query?: {
+        /** comma seperated list of stake pubkeys, will return all rewards if none are specified */
+        stakePubkeys?: string;
+        /** unix timestamp of starting date from */
+        dateFrom?: number;
+        /** unix timestamp of ending date to */
+        dateTo?: number;
+        /** number of datapoints to return, defaults to 30 */
+        datapoints?: number;
+        /** currency used for price data */
+        currency?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: StakingRewardsChartData[];
+        },
+        any
+      >({
+        path: `/solana/stake/rewardsChartData`,
         method: "GET",
         query: query,
         format: "json",
