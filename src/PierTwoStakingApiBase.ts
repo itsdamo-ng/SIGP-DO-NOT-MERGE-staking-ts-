@@ -250,7 +250,7 @@ export interface ValidatorDailyPerformanceStat {
   executionRewards: string;
   periodStart: number;
   periodEnd: number;
-  ethPrice: number;
+  price: number;
 }
 
 export interface CustomerDashboardSummary {
@@ -372,7 +372,7 @@ export interface StakingRewardsChartData {
   mevRewards: string;
   periodStart: number;
   periodEnd: number;
-  solPrice: number;
+  price: number;
 }
 
 export interface StakingNetworkInfo {
