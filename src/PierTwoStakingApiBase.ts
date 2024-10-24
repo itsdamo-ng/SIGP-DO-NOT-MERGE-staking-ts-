@@ -315,9 +315,23 @@ export interface SolanaStakeAccount {
   initialLamports: string;
   rentExemptionAmount: string;
   lamports: string;
+  inactiveStake: string;
   status: string;
   reference: string;
   label: string;
+  creationLastValidBlockHeight: number;
+  activationEpoch: number;
+  lastStatusSyncEpoch: number;
+  performanceTotal: string;
+  performance30d: string;
+  performance7d: string;
+}
+
+export interface SolanaTransactionSignature {
+  pubKey: string;
+  /** secret key of signer, only present for stake creation where keypair is ephemeral */
+  secretKey?: string;
+  signature: string;
 }
 
 export interface BuildTransactionPayloadResponseDto {
@@ -335,7 +349,7 @@ export interface BuildTransactionPayloadResponseDto {
    * additional signatures to apply to transaction before submitting
    * @example [{"pubKey":"6V2Lfg1jvanitWUKWRDLTrWvbHvsMMbRuhQ3CTKY1FAq","signature":"2bfb03d5ce6263ba0f...7a24b6d00c4682c04"}]
    */
-  signatures: string[];
+  signatures: SolanaTransactionSignature[];
 }
 
 export interface BuildTransactionPayloadRequestDto {
@@ -343,7 +357,10 @@ export interface BuildTransactionPayloadRequestDto {
   instructions: string[];
   /** @example "ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8" */
   feePayer: string;
-  /** @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY" */
+  /**
+   * target stake account to which this operation relates
+   * @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY"
+   */
   stakePubkey: string;
 }
 
