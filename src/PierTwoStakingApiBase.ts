@@ -352,9 +352,14 @@ export interface BuildTransactionPayloadResponseDto {
   signatures: SolanaTransactionSignature[];
 }
 
+export interface StakeInstructionWithInputs {
+  type: string;
+  input: object;
+}
+
 export interface BuildTransactionPayloadRequestDto {
   /** @example [{"type":"createAndDelegate","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","lamports":1000000000}}] */
-  instructions: string[];
+  instructions: StakeInstructionWithInputs[];
   /** @example "ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8" */
   feePayer: string;
   /**
