@@ -315,9 +315,23 @@ export interface SolanaStakeAccount {
   initialLamports: string;
   rentExemptionAmount: string;
   lamports: string;
+  inactiveStake: string;
   status: string;
   reference: string;
   label: string;
+  creationLastValidBlockHeight: number;
+  activationEpoch: number;
+  lastStatusSyncEpoch: number;
+  performanceTotal: string;
+  performance30d: string;
+  performance7d: string;
+}
+
+export interface SolanaTransactionSignature {
+  pubKey: string;
+  /** secret key of signer, only present for stake creation where keypair is ephemeral */
+  secretKey?: string;
+  signature: string;
 }
 
 export interface BuildTransactionPayloadResponseDto {
@@ -335,15 +349,23 @@ export interface BuildTransactionPayloadResponseDto {
    * additional signatures to apply to transaction before submitting
    * @example [{"pubKey":"6V2Lfg1jvanitWUKWRDLTrWvbHvsMMbRuhQ3CTKY1FAq","signature":"2bfb03d5ce6263ba0f...7a24b6d00c4682c04"}]
    */
-  signatures: string[];
+  signatures: SolanaTransactionSignature[];
+}
+
+export interface StakeInstructionWithInputs {
+  type: string;
+  input: object;
 }
 
 export interface BuildTransactionPayloadRequestDto {
-  /** @example [{"type":"createAndDelegate","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","lamports":1000000000}}] */
-  instructions: string[];
+  /** @example [{"type":"createAndDelegate","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"create","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"delegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"undelegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"withdraw","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","toPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","lamports":1000000000}},{"type":"merge","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","sourceStakePubkey":"2niBr5ra1jswrGRkxVG42GC63fTQ7TtE6uTiNeuJTu67"}}] */
+  instructions: StakeInstructionWithInputs[];
   /** @example "ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8" */
   feePayer: string;
-  /** @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY" */
+  /**
+   * target stake account to which this operation relates
+   * @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY"
+   */
   stakePubkey: string;
 }
 
@@ -1112,7 +1134,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Generate a stake transaction payload containing one or more instructions
+     * @description Generate a stake transaction payload containing one or more instructions. Possible instruction types and inputs are described below: This returns a serialized transaction which can be deserialized, signed and submitted to the network. See [@solana/web.js](https://solana-labs.github.io/solana-web3.js/index.html) docs for deserializing [Versioned Messages](https://solana-labs.github.io/solana-web3.js/variables/VersionedMessage-1.html) and working with [Versioned Transactions](https://solana-labs.github.io/solana-web3.js/classes/VersionedTransaction.html) ***N.B any instructions operating on an existing stake account must specify target stakePubkey in the request body seperate to the instructions*** ***Create and delegate new stake account*** ~~~ { type: 'createAndDelegate' input: { fromPubkey: pubkey of funding address, stakeAuthority: address authorized to delegate and undelegate stake, withdrawAuthority: address authorized to withdraw stake, lamports: amount of lamports to stake (1 sol = 1000000000 lamports), reference: an arbitrary reference used to identify/group the stake within the Pier Two platform, label: an arbitrary label/memo for use within the Pier Two platform } } ~~~ ***Create a new stake account (same input data as 'createAndDelegate')*** ~~~ { type: 'create' input: { fromPubkey: pubkey of funding address, stakeAuthority: address authorized to delegate and undelegate stake, withdrawAuthority: address authorized to withdraw stake, lamports: amount of lamports to stake (1 sol = 1000000000 lamports), reference: an arbitrary reference used to identify/group the stake within the Pier Two platform, label: an arbitrary label/memo for use within the Pier Two platform } } ~~~ ***Delegate an existing stake account*** ~~~ { type: 'delegate' input: { authorizedPubkey: address authorized to delegate and undelegate stake } } ~~~ ***Undelegate (deactivate) an existing stake account*** ~~~ { type: 'undelegate' input: { authorizedPubkey: address authorized to delegate and undelegate stake } } ~~~ ***Withdraw inactive stake (deactivated stake balance or any other excess SOL held by account)*** ~~~ { type: 'withdraw' input: { toPubkey: recipient of withdrawn funds, authorizedPubkey: address authorized to withdraw stake, lamports: amount of lamports to withdraw (1 sol = 1000000000 lamports), } } ~~~ ***Merge an eligible stake account into target stake account*** An eligible stake account must have the same stakeAuthority and withdrawAuthority and have been active for an entire epoch and earned rewards ~~~ { type: 'merge' input: { sourceStakePubkey: address of stake account to merge (this account will be dissolved/closed onchain), authorizedPubkey: address authorized to delegate and undelegate } } ~~~
      *
      * @tags solana
      * @name BuildTransactionPayload
