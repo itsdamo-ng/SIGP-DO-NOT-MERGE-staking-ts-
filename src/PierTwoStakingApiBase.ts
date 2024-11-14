@@ -11,9 +11,119 @@
 
 type UtilRequiredKeys<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
+export interface PaginationData {
+  totalCount: number;
+  pageSize: number;
+  pageNumber: number;
+}
+
+export interface PaginatedApiResponseBase {
+  data: object;
+  message?: string;
+  pagination: PaginationData;
+}
+
+export interface SolanaStakeAccount {
+  customerId: number;
+  stakePubkey: string;
+  fromPubkey: string;
+  stakeAuthority: string;
+  withdrawAuthority: string;
+  initialLamports: string;
+  rentExemptionAmount: string;
+  lamports: string;
+  inactiveStake: string;
+  status: string;
+  reference: string;
+  label: string;
+  creationLastValidBlockHeight: number;
+  activationEpoch: number;
+  lastStatusSyncEpoch: number;
+  performanceTotal: string;
+  performance30d: string;
+  performance7d: string;
+}
+
 export interface ApiResponseBase {
   data: object;
   message?: string;
+}
+
+export interface SolanaTransactionSignature {
+  pubKey: string;
+  /** secret key of signer, only present for stake creation where keypair is ephemeral */
+  secretKey?: string;
+  signature: string;
+}
+
+export interface BuildTransactionPayloadResponseDto {
+  /**
+   * serialized transaction
+   * @example "800200080ac6f91611c...080900040200000000"
+   */
+  serialized: string;
+  /**
+   * pubkey of stake account
+   * @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY"
+   */
+  stakePubkey?: string;
+  /**
+   * additional signatures to apply to transaction before submitting
+   * @example [{"pubKey":"6V2Lfg1jvanitWUKWRDLTrWvbHvsMMbRuhQ3CTKY1FAq","signature":"2bfb03d5ce6263ba0f...7a24b6d00c4682c04"}]
+   */
+  signatures: SolanaTransactionSignature[];
+}
+
+export interface StakeInstructionWithInputs {
+  type: string;
+  input: object;
+}
+
+export interface BuildTransactionPayloadRequestDto {
+  /** @example [{"type":"createAndDelegate","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"create","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"delegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"undelegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"withdraw","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","toPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","lamports":1000000000}},{"type":"merge","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","sourceStakePubkey":"2niBr5ra1jswrGRkxVG42GC63fTQ7TtE6uTiNeuJTu67"}}] */
+  instructions: StakeInstructionWithInputs[];
+  /** @example "ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8" */
+  feePayer: string;
+  /**
+   * target stake account to which this operation relates
+   * @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY"
+   */
+  stakePubkey: string;
+}
+
+export interface StakingPerformanceSummary {
+  inflationRewardsTotal: string;
+  inflationRewards7d: string;
+  inflationRewards30d: string;
+  mevRewardsTotal: string;
+  mevRewards7d: string;
+  mevRewards30d: string;
+}
+
+export interface SolanaStakeAccountRewards {
+  stakePubkey: string;
+  dayStart: number;
+  epoch: number;
+  inflationRewardAmount: string;
+  effectiveSlot: number;
+  postBalance: string;
+  mevRewardAmount: string;
+  solPrice: number;
+}
+
+export interface StakingRewardsChartData {
+  inflationRewards: string;
+  mevRewards: string;
+  periodStart: number;
+  periodEnd: number;
+  price: number;
+}
+
+export interface StakingNetworkInfo {
+  currentEpoch: number;
+  avgInflationRewardRate: number;
+  slotIndex: number;
+  slotsInEpoch: number;
 }
 
 export interface GetAccountResponse {
@@ -88,10 +198,6 @@ export interface CreateStakeDto {
   label: string;
 }
 
-export interface DataWithMessage {
-  message: string;
-}
-
 export interface Validator {
   pubkey: string;
   withdrawal_credentials: string;
@@ -120,6 +226,14 @@ export interface StakeDetailsWithValidators {
   validators: Validator[];
 }
 
+export interface CreateStakeV2Response {
+  stake: StakeDetailsWithValidators;
+}
+
+export interface DataWithMessage {
+  message: string;
+}
+
 export interface ValidatorDepositJson {
   pubkey: string;
   withdrawal_credentials: string;
@@ -138,6 +252,8 @@ export interface ValidatorStatusCounts {
   EXITED: number;
   PENDING_ACTIVATION: number;
   WAITING_DEPOSIT: number;
+  WAITING_PREGEN: number;
+  WAITING_REQUEST: number;
   WAITING_KEYGEN: number;
   WAITING_VC_DEPLOYMENT: number;
   ABANDONED: number;
@@ -294,114 +410,40 @@ export interface CustomerAccount {
   stakes: CustomerAccountStake[];
 }
 
-export interface PaginationData {
-  totalCount: number;
-  pageSize: number;
-  pageNumber: number;
-}
-
-export interface PaginatedApiResponseBase {
-  data: object;
-  message?: string;
-  pagination: PaginationData;
-}
-
-export interface SolanaStakeAccount {
-  customerId: number;
-  stakePubkey: string;
-  fromPubkey: string;
-  stakeAuthority: string;
-  withdrawAuthority: string;
-  initialLamports: string;
-  rentExemptionAmount: string;
-  lamports: string;
-  inactiveStake: string;
-  status: string;
-  reference: string;
-  label: string;
-  creationLastValidBlockHeight: number;
-  activationEpoch: number;
-  lastStatusSyncEpoch: number;
-  performanceTotal: string;
-  performance30d: string;
-  performance7d: string;
-}
-
-export interface SolanaTransactionSignature {
-  pubKey: string;
-  /** secret key of signer, only present for stake creation where keypair is ephemeral */
-  secretKey?: string;
-  signature: string;
-}
-
-export interface BuildTransactionPayloadResponseDto {
-  /**
-   * serialized transaction
-   * @example "800200080ac6f91611c...080900040200000000"
-   */
-  serialized: string;
-  /**
-   * pubkey of stake account
-   * @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY"
-   */
-  stakePubkey?: string;
-  /**
-   * additional signatures to apply to transaction before submitting
-   * @example [{"pubKey":"6V2Lfg1jvanitWUKWRDLTrWvbHvsMMbRuhQ3CTKY1FAq","signature":"2bfb03d5ce6263ba0f...7a24b6d00c4682c04"}]
-   */
-  signatures: SolanaTransactionSignature[];
-}
-
-export interface StakeInstructionWithInputs {
-  type: string;
-  input: object;
-}
-
-export interface BuildTransactionPayloadRequestDto {
-  /** @example [{"type":"createAndDelegate","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"create","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"delegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"undelegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"withdraw","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","toPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","lamports":1000000000}},{"type":"merge","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","sourceStakePubkey":"2niBr5ra1jswrGRkxVG42GC63fTQ7TtE6uTiNeuJTu67"}}] */
-  instructions: StakeInstructionWithInputs[];
-  /** @example "ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8" */
-  feePayer: string;
-  /**
-   * target stake account to which this operation relates
-   * @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY"
-   */
-  stakePubkey: string;
-}
-
-export interface StakingPerformanceSummary {
-  inflationRewardsTotal: string;
-  inflationRewards7d: string;
-  inflationRewards30d: string;
-  mevRewardsTotal: string;
-  mevRewards7d: string;
-  mevRewards30d: string;
-}
-
-export interface SolanaStakeAccountRewards {
-  stakePubkey: string;
-  dayStart: number;
-  epoch: number;
-  inflationRewardAmount: string;
-  effectiveSlot: number;
-  postBalance: string;
-  mevRewardAmount: string;
+export interface WebsiteDataPrices {
   solPrice: number;
+  ethPrice: number;
+  nearPrice: number;
+  tonPrice: number;
+  polPrice: number;
+  eigenPrice: number;
 }
 
-export interface StakingRewardsChartData {
-  inflationRewards: string;
-  mevRewards: string;
-  periodStart: number;
-  periodEnd: number;
-  price: number;
+export interface WebsiteDataAssetsUnderStake {
+  sol: number;
+  eth: number;
+  near: number;
+  ton: number;
+  pol: number;
+  eigen: number;
 }
 
-export interface StakingNetworkInfo {
-  currentEpoch: number;
-  avgInflationRewardRate: number;
-  slotIndex: number;
-  slotsInEpoch: number;
+export interface WebsiteData {
+  prices: WebsiteDataPrices;
+  assetsUnderStake: WebsiteDataAssetsUnderStake;
+}
+
+export interface PierTwoEthereumInfo {
+  batchDepositContractAddress: string;
+}
+
+export interface PierTwoSolanaInfo {
+  voteAccountAddress: string;
+}
+
+export interface PierTwoInfo {
+  ethereum: PierTwoEthereumInfo;
+  solana: PierTwoSolanaInfo;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -622,6 +664,174 @@ export class HttpClient<SecurityDataType = unknown> {
  * The Piertwo Staking API Docs
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  solana = {
+    /**
+     * @description Fetch solana staking accounts associated to your account.
+     *
+     * @tags solana
+     * @name GetStakes
+     * @request GET:/solana/stakes
+     */
+    getStakes: (
+      query?: {
+        pageNumber?: number;
+        pageSize?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<PaginatedApiResponseBase, "data"> & {
+          data: SolanaStakeAccount[];
+        },
+        any
+      >({
+        path: `/solana/stakes`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Generate a stake transaction payload containing one or more instructions. Possible instruction types and inputs are described below: This returns a serialized transaction which can be deserialized, signed and submitted to the network. See [@solana/web.js](https://solana-labs.github.io/solana-web3.js/index.html) docs for deserializing [Versioned Messages](https://solana-labs.github.io/solana-web3.js/variables/VersionedMessage-1.html) and working with [Versioned Transactions](https://solana-labs.github.io/solana-web3.js/classes/VersionedTransaction.html) ***N.B any instructions operating on an existing stake account must specify target stakePubkey in the request body seperate to the instructions*** ***Create and delegate new stake account*** ~~~ { type: 'createAndDelegate' input: { fromPubkey: pubkey of funding address, stakeAuthority: address authorized to delegate and undelegate stake, withdrawAuthority: address authorized to withdraw stake, lamports: amount of lamports to stake (1 sol = 1000000000 lamports), reference: an arbitrary reference used to identify/group the stake within the Pier Two platform, label: an arbitrary label/memo for use within the Pier Two platform } } ~~~ ***Create a new stake account (same input data as 'createAndDelegate')*** ~~~ { type: 'create' input: { fromPubkey: pubkey of funding address, stakeAuthority: address authorized to delegate and undelegate stake, withdrawAuthority: address authorized to withdraw stake, lamports: amount of lamports to stake (1 sol = 1000000000 lamports), reference: an arbitrary reference used to identify/group the stake within the Pier Two platform, label: an arbitrary label/memo for use within the Pier Two platform } } ~~~ ***Delegate an existing stake account*** ~~~ { type: 'delegate' input: { authorizedPubkey: address authorized to delegate and undelegate stake } } ~~~ ***Undelegate (deactivate) an existing stake account*** ~~~ { type: 'undelegate' input: { authorizedPubkey: address authorized to delegate and undelegate stake } } ~~~ ***Withdraw inactive stake (deactivated stake balance or any other excess SOL held by account)*** ~~~ { type: 'withdraw' input: { toPubkey: recipient of withdrawn funds, authorizedPubkey: address authorized to withdraw stake, lamports: amount of lamports to withdraw (1 sol = 1000000000 lamports), } } ~~~ ***Merge an eligible stake account into target stake account*** An eligible stake account must have the same stakeAuthority and withdrawAuthority and have been active for an entire epoch and earned rewards ~~~ { type: 'merge' input: { sourceStakePubkey: address of stake account to merge (this account will be dissolved/closed onchain), authorizedPubkey: address authorized to delegate and undelegate } } ~~~
+     *
+     * @tags solana
+     * @name BuildTransactionPayload
+     * @request POST:/solana/stake/buildTransaction
+     */
+    buildTransactionPayload: (data: BuildTransactionPayloadRequestDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: BuildTransactionPayloadResponseDto;
+        },
+        any
+      >({
+        path: `/solana/stake/buildTransaction`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags solana
+     * @name GetPerformanceSummary
+     * @summary Returns performance breakdown summary
+     * @request GET:/solana/stake/performanceSummary
+     */
+    getPerformanceSummary: (
+      query?: {
+        /** comma seperated list of stake account pubkeys, will return data for all active stake accounts if none are provided */
+        stakePubkey?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: StakingPerformanceSummary;
+        },
+        any
+      >({
+        path: `/solana/stake/performanceSummary`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags solana
+     * @name GetStakeAccoutDailyRewards
+     * @summary Returns daily rewards stats of specified stake accounts
+     * @request GET:/solana/stake/dailyRewards
+     */
+    getStakeAccoutDailyRewards: (
+      query: {
+        /** comma seperated list of stake account pubkeys */
+        stakePubkey: string;
+        /** fiat currency for ethereum pricing */
+        currency?: string;
+        /** unix timestamp of starting date from */
+        dateFrom?: number;
+        /** unix timestamp of ending date to */
+        dateTo?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: SolanaStakeAccountRewards[];
+        },
+        any
+      >({
+        path: `/solana/stake/dailyRewards`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags solana
+     * @name GetStakeRewardsChartData
+     * @summary Retrieve summarized staking rewards chart data
+     * @request GET:/solana/stake/rewardsChartData
+     */
+    getStakeRewardsChartData: (
+      query?: {
+        /** comma seperated list of stake pubkeys, will return all rewards if none are specified */
+        stakePubkeys?: string;
+        /** unix timestamp of starting date from */
+        dateFrom?: number;
+        /** unix timestamp of ending date to */
+        dateTo?: number;
+        /** number of datapoints to return, defaults to 30 */
+        datapoints?: number;
+        /** currency used for price data */
+        currency?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: StakingRewardsChartData[];
+        },
+        any
+      >({
+        path: `/solana/stake/rewardsChartData`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns current epoch staking reward info
+     *
+     * @tags solana
+     * @name GetNetworkStakingInfo
+     * @request GET:/solana/stake/networkInfo
+     */
+    getNetworkStakingInfo: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: StakingNetworkInfo;
+        },
+        any
+      >({
+        path: `/solana/stake/networkInfo`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+  };
   account = {
     /**
      * @description Fetch basic account details
@@ -699,6 +909,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         any
       >({
         path: `/ethereum/stake`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Request one or more new validators, returning the individual validators in the response
+     *
+     * @tags ethereum
+     * @name CreateStakeV2
+     * @request POST:/ethereum/stakeV2
+     */
+    createStakeV2: (data: CreateStakeDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CreateStakeV2Response;
+        },
+        any
+      >({
+        path: `/ethereum/stakeV2`,
         method: "POST",
         body: data,
         type: ContentType.Json,
@@ -1105,112 +1337,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
   };
-  solana = {
+  public = {
     /**
-     * @description Fetch solana staking accounts associated to your account.
+     * @description get data for rendering network statistics (asset prices, assets UAM, etc)
      *
-     * @tags solana
-     * @name GetStakes
-     * @request GET:/solana/stakes
+     * @tags public
+     * @name GetWebsiteData
+     * @request GET:/public/websiteData
      */
-    getStakes: (
+    getWebsiteData: (
       query?: {
-        pageNumber?: number;
-        pageSize?: number;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<
-        UtilRequiredKeys<PaginatedApiResponseBase, "data"> & {
-          data: SolanaStakeAccount[];
-        },
-        any
-      >({
-        path: `/solana/stakes`,
-        method: "GET",
-        query: query,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Generate a stake transaction payload containing one or more instructions. Possible instruction types and inputs are described below: This returns a serialized transaction which can be deserialized, signed and submitted to the network. See [@solana/web.js](https://solana-labs.github.io/solana-web3.js/index.html) docs for deserializing [Versioned Messages](https://solana-labs.github.io/solana-web3.js/variables/VersionedMessage-1.html) and working with [Versioned Transactions](https://solana-labs.github.io/solana-web3.js/classes/VersionedTransaction.html) ***N.B any instructions operating on an existing stake account must specify target stakePubkey in the request body seperate to the instructions*** ***Create and delegate new stake account*** ~~~ { type: 'createAndDelegate' input: { fromPubkey: pubkey of funding address, stakeAuthority: address authorized to delegate and undelegate stake, withdrawAuthority: address authorized to withdraw stake, lamports: amount of lamports to stake (1 sol = 1000000000 lamports), reference: an arbitrary reference used to identify/group the stake within the Pier Two platform, label: an arbitrary label/memo for use within the Pier Two platform } } ~~~ ***Create a new stake account (same input data as 'createAndDelegate')*** ~~~ { type: 'create' input: { fromPubkey: pubkey of funding address, stakeAuthority: address authorized to delegate and undelegate stake, withdrawAuthority: address authorized to withdraw stake, lamports: amount of lamports to stake (1 sol = 1000000000 lamports), reference: an arbitrary reference used to identify/group the stake within the Pier Two platform, label: an arbitrary label/memo for use within the Pier Two platform } } ~~~ ***Delegate an existing stake account*** ~~~ { type: 'delegate' input: { authorizedPubkey: address authorized to delegate and undelegate stake } } ~~~ ***Undelegate (deactivate) an existing stake account*** ~~~ { type: 'undelegate' input: { authorizedPubkey: address authorized to delegate and undelegate stake } } ~~~ ***Withdraw inactive stake (deactivated stake balance or any other excess SOL held by account)*** ~~~ { type: 'withdraw' input: { toPubkey: recipient of withdrawn funds, authorizedPubkey: address authorized to withdraw stake, lamports: amount of lamports to withdraw (1 sol = 1000000000 lamports), } } ~~~ ***Merge an eligible stake account into target stake account*** An eligible stake account must have the same stakeAuthority and withdrawAuthority and have been active for an entire epoch and earned rewards ~~~ { type: 'merge' input: { sourceStakePubkey: address of stake account to merge (this account will be dissolved/closed onchain), authorizedPubkey: address authorized to delegate and undelegate } } ~~~
-     *
-     * @tags solana
-     * @name BuildTransactionPayload
-     * @request POST:/solana/stake/buildTransaction
-     */
-    buildTransactionPayload: (data: BuildTransactionPayloadRequestDto, params: RequestParams = {}) =>
-      this.request<
-        UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: BuildTransactionPayloadResponseDto;
-        },
-        any
-      >({
-        path: `/solana/stake/buildTransaction`,
-        method: "POST",
-        body: data,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags solana
-     * @name GetPerformanceSummary
-     * @summary Returns performance breakdown summary
-     * @request GET:/solana/stake/performanceSummary
-     */
-    getPerformanceSummary: (
-      query?: {
-        /** comma seperated list of stake account pubkeys, will return data for all active stake accounts if none are provided */
-        stakePubkey?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<
-        UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: StakingPerformanceSummary;
-        },
-        any
-      >({
-        path: `/solana/stake/performanceSummary`,
-        method: "GET",
-        query: query,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags solana
-     * @name GetStakeAccoutDailyRewards
-     * @summary Returns daily rewards stats of specified stake accounts
-     * @request GET:/solana/stake/dailyRewards
-     */
-    getStakeAccoutDailyRewards: (
-      query: {
-        /** comma seperated list of stake account pubkeys */
-        stakePubkey: string;
-        /** fiat currency for ethereum pricing */
+        /** currency used for price data (`usd` by default) */
         currency?: string;
-        /** unix timestamp of starting date from */
-        dateFrom?: number;
-        /** unix timestamp of ending date to */
-        dateTo?: number;
       },
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: SolanaStakeAccountRewards[];
+          data: WebsiteData;
         },
         any
       >({
-        path: `/solana/stake/dailyRewards`,
+        path: `/public/websiteData`,
         method: "GET",
         query: query,
         format: "json",
@@ -1218,56 +1366,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * No description
+     * @description get static network config such as contract addresses and validator addresses
      *
-     * @tags solana
-     * @name GetStakeRewardsChartData
-     * @summary Retrieve summarized staking rewards chart data
-     * @request GET:/solana/stake/rewardsChartData
+     * @tags public
+     * @name NetworkConfig
+     * @request GET:/public/networkConfig
      */
-    getStakeRewardsChartData: (
-      query?: {
-        /** comma seperated list of stake pubkeys, will return all rewards if none are specified */
-        stakePubkeys?: string;
-        /** unix timestamp of starting date from */
-        dateFrom?: number;
-        /** unix timestamp of ending date to */
-        dateTo?: number;
-        /** number of datapoints to return, defaults to 30 */
-        datapoints?: number;
-        /** currency used for price data */
-        currency?: number;
-      },
-      params: RequestParams = {},
-    ) =>
+    networkConfig: (params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: StakingRewardsChartData[];
+          data: PierTwoInfo;
         },
         any
       >({
-        path: `/solana/stake/rewardsChartData`,
-        method: "GET",
-        query: query,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Returns current epoch staking reward info
-     *
-     * @tags solana
-     * @name GetNetworkStakingInfo
-     * @request GET:/solana/stake/networkInfo
-     */
-    getNetworkStakingInfo: (params: RequestParams = {}) =>
-      this.request<
-        UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: StakingNetworkInfo;
-        },
-        any
-      >({
-        path: `/solana/stake/networkInfo`,
+        path: `/public/networkConfig`,
         method: "GET",
         format: "json",
         ...params,
