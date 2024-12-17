@@ -80,8 +80,6 @@ export interface StakeInstructionWithInputs {
 }
 
 export interface BuildTransactionPayloadRequestDto {
-  /** @example [{"type":"createAndDelegate","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"create","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"delegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"undelegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"withdraw","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","toPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","lamports":1000000000}},{"type":"merge","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","sourceStakePubkey":"2niBr5ra1jswrGRkxVG42GC63fTQ7TtE6uTiNeuJTu67"}}] */
-  instructions: StakeInstructionWithInputs[];
   /** @example "ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8" */
   feePayer: string;
   /**
@@ -89,6 +87,8 @@ export interface BuildTransactionPayloadRequestDto {
    * @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY"
    */
   stakePubkey: string;
+  /** @example [{"type":"createAndDelegate","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"create","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"delegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"undelegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"withdraw","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","toPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","lamports":1000000000}},{"type":"merge","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","sourceStakePubkey":"2niBr5ra1jswrGRkxVG42GC63fTQ7TtE6uTiNeuJTu67"}}] */
+  instructions: StakeInstructionWithInputs[];
 }
 
 export interface StakingPerformanceSummary {
@@ -311,6 +311,11 @@ export interface BeaconNodeVoluntaryExitResponse {
 export interface BulkWithdrawError {
   pubkey: string;
   message: string;
+}
+
+export interface GenerateDepositDataDto {
+  /** @example [{"pubkey":"a20d2ba70419cb3922985488e339736ab32e6184f11708d2333f65b14f70cf47365b538c32eff237cdaf293ea2bcfb03","amountGwei":"1000000000"}] */
+  deposits: string[];
 }
 
 export interface QueueStats {
@@ -657,11 +662,11 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title Piertwo Staking API
+ * @title Pier Two Staking API
  * @version 1.0
  * @contact
  *
- * The Piertwo Staking API Docs
+ * The Pier Two Staking API Docs
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   solana = {
@@ -1142,6 +1147,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         any
       >({
         path: `/ethereum/bulkWithdrawValidators`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description By default, validator records are populated with deposit transaction data suitable for deposits of 32ETH. This endpoint can be used in situations where you want to perform deposits of amounts other than 32ETH. This will generate the deposit transaction data for one or more validators corresponding to the amount(s) specified in the request body. ***Note that this will not replace nor invalidate the deposit data that is stored on the validator records themselves*** This endpoint will return an error in the following situations: - an invalid amount is specified (<= 0 or > 32000000000) - one or more of the specified validators is not in a WAITING_DEPOSIT state - one or more validators is not associated your account - the list of specified validators contains duplicate pubkeys
+     *
+     * @tags ethereum
+     * @name GenerateDepositData
+     * @summary Generate deposit data with arbitrary ETH amounts for specified validator pubkeys
+     * @request POST:/ethereum/validators/generateDepositData
+     */
+    generateDepositData: (data: GenerateDepositDataDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: ValidatorDepositJson[];
+        },
+        any
+      >({
+        path: `/ethereum/validators/generateDepositData`,
         method: "POST",
         body: data,
         type: ContentType.Json,
