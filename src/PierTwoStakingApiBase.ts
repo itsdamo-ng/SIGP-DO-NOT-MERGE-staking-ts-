@@ -313,9 +313,14 @@ export interface BulkWithdrawError {
   message: string;
 }
 
+export interface ValidatorDeposit {
+  pubkey: string;
+  amountGwei: string;
+}
+
 export interface GenerateDepositDataDto {
   /** @example [{"pubkey":"a20d2ba70419cb3922985488e339736ab32e6184f11708d2333f65b14f70cf47365b538c32eff237cdaf293ea2bcfb03","amountGwei":"1000000000"}] */
-  deposits: string[];
+  deposits: ValidatorDeposit[];
 }
 
 export interface QueueStats {
