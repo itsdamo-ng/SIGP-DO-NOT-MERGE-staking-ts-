@@ -313,6 +313,19 @@ export interface BulkWithdrawError {
   message: string;
 }
 
+export interface EstimatedWithdrawalTimes {
+  validatorIndex: number;
+  expectedExitEpoch: number;
+  expectedFullWithdrawalEligibilityEpoch: number;
+  predictedUpcomingWithdrawalEpoch: number;
+  predictedExitSubmissionDeadlineEpoch: number;
+}
+
+export interface EstimateWithdrawalTimesDto {
+  /** @example [1142356] */
+  validatorIndexes: number[];
+}
+
 export interface ValidatorDeposit {
   pubkey: string;
   amountGwei: string;
@@ -1152,6 +1165,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         any
       >({
         path: `/ethereum/bulkWithdrawValidators`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description This endpoint will simulate all pending withdrawals up to and including the specified validator indexes. The simulation calculates the estimated exit as if the exit had been processed at that moment in time. The results are indicative and can only account for the state of the exit queue at the time of simulating. If this is being used optimise validator exits, caution should be taken since missing the `predictedExitSubmissionDeadlineEpoch` will result in the longest possible period of no rewards earned. Submitting exit messages during the deadline epoch can be risky, some time (2-4 minutes) should be allowed for the beacon chain to process any exit messages broadcasted to the network. We recommend submitting exit messages at least an hour before the deadline epoch to account for unexpected changes to the exit queue. You should also consider the impact of your own withdrawals on the exit queue if you are exiting large amounts of validators at once. This endpoint will return an error in the following situations: - one or more invalid validator indexes are passed - one or more of the specified validators does not have withdrawal credentials set (0x01...) - one or more validators has already exited - one or more validators is not known to the beacon chain Below is a description of each of the fields returned: - **expectedExitEpoch** - the epoch in which the validator would exit the Beacon chain if its exit was processed at the current time - **expectedFullWithdrawalEligibilityEpoch** - the epoch where the validator would become eligible for receiving the full staked balance ETH plus any excess - **predictedUpcomingWithdrawalEpoch** - the predicted epoch in which the validator's withdrawal will be processed by the Beacon chain, taking the current exit queue into account - **predictedExitSubmissionDeadlineEpoch** - the deadline epoch in which the validator should already be queued for exiting the Beacon chain
+     *
+     * @tags ethereum
+     * @name EstimateWithdrawalTimes
+     * @summary Calculate estimated withdrawal times for given validator indexes
+     * @request POST:/ethereum/estimateWithdrawalTimes
+     */
+    estimateWithdrawalTimes: (data: EstimateWithdrawalTimesDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: EstimatedWithdrawalTimes[];
+        },
+        any
+      >({
+        path: `/ethereum/estimateWithdrawalTimes`,
         method: "POST",
         body: data,
         type: ContentType.Json,
