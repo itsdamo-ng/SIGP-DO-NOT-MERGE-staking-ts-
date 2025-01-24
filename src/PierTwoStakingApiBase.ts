@@ -155,6 +155,13 @@ export interface GetApiKeyDto {
   name: string;
   /** @example "0b381d39-43b4-480f-b3c9-f3ff3d19cb0a" */
   key: string;
+  /** @format date-time */
+  deletedAt: string;
+}
+
+export interface CreateApiKeyDto {
+  /** @example "Default API Key" */
+  name: string;
 }
 
 export interface StakeDetails {
@@ -883,7 +890,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetApiKeys
      * @request GET:/account/apikeys
      */
-    getApiKeys: (params: RequestParams = {}) =>
+    getApiKeys: (
+      query?: {
+        /** Anything except 'true' will be considered `false`. */
+        includeRevokedKeys?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
           data: GetApiKeyDto[];
@@ -892,6 +905,49 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       >({
         path: `/account/apikeys`,
         method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Add new api key for your account
+     *
+     * @tags account
+     * @name AddNewApiKey
+     * @request POST:/account/apikeys
+     */
+    addNewApiKey: (data: CreateApiKeyDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetApiKeyDto;
+        },
+        any
+      >({
+        path: `/account/apikeys`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Revoke api key for your account
+     *
+     * @tags account
+     * @name RevokeApiKey
+     * @request PUT:/account/apikeys/{key}
+     */
+    revokeApiKey: (key: string, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetApiKeyDto;
+        },
+        any
+      >({
+        path: `/account/apikeys/${key}`,
+        method: "PUT",
         format: "json",
         ...params,
       }),
