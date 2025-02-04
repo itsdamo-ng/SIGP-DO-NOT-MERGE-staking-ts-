@@ -126,7 +126,7 @@ export interface StakingNetworkInfo {
   slotsInEpoch: number;
 }
 
-export interface AuthorisedEmail {
+export interface AuthorizedEmail {
   /** @example "myteammember@piertwo.com" */
   emailAddress: string;
 }
@@ -153,7 +153,7 @@ export interface GetAccountResponse {
    * @example {"applicableTerms":"general","agreedTerms":{"29-05-2024":"2024-08-19T22:35:52.622Z"}}
    */
   termsAndConditions: object;
-  authorizedLogins: AuthorisedEmail[];
+  authorizedLogins: AuthorizedEmail[];
 }
 
 export interface GetApiKeyDto {
