@@ -162,7 +162,7 @@ export interface GetApiKeyDto {
   /** @example "0b381d39-43b4-480f-b3c9-f3ff3d19cb0a" */
   key: string;
   /** @format date-time */
-  deletedAt: string;
+  deletedAt?: string;
 }
 
 export interface CreateApiKeyDto {
@@ -241,6 +241,39 @@ export interface StakeDetailsWithValidators {
 
 export interface CreateStakeV2Response {
   stake: StakeDetailsWithValidators;
+}
+
+export interface CreateStakePectraDto {
+  /**
+   * nominated withdrawal address
+   * @example "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+   */
+  withdrawalAddress: string;
+  /**
+   * nominated fee recipient address
+   * @example "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+   */
+  suggestedFeeRecipient: string;
+  /**
+   * total number of eth to stake
+   * @example "1000000000000"
+   */
+  stakeAmountGwei: string;
+  /**
+   * max ETH to allocate to each validator, will default to 2048 ETH
+   * @example "100000000000"
+   */
+  maxEthPerValidatorGwei: string;
+  /**
+   * an arbitrary reference used to identify/group the stake
+   * @example "customer-id-1403"
+   */
+  reference: string;
+  /**
+   * an arbitrary label/memo
+   * @example "Staking 100 ETH"
+   */
+  label: string;
 }
 
 export interface DataWithMessage {
@@ -446,6 +479,14 @@ export interface CustomerAccount {
   stakes: CustomerAccountStake[];
 }
 
+export interface ValidatorIncomeHistory {
+  /** @format date-time */
+  timestampStart: string;
+  /** @format date-time */
+  timestampEnd: string;
+  totalIncomeWei: string;
+}
+
 export interface WebsiteDataPrices {
   solPrice: number;
   ethPrice: number;
@@ -469,17 +510,41 @@ export interface WebsiteData {
   assetsUnderStake: WebsiteDataAssetsUnderStake;
 }
 
+export interface PierTwoEigenLayerInfo {
+  operatorAddress: string;
+  eigenPodManagerAddress: string;
+}
+
 export interface PierTwoEthereumInfo {
   batchDepositContractAddress: string;
+  pectraBatchDepositContractAddress: string;
+  eigenlayer: PierTwoEigenLayerInfo;
+  currentEpoch: number;
+  pectraForkEpoch: number;
+  network: string;
 }
 
 export interface PierTwoSolanaInfo {
   voteAccountAddress: string;
+  network: string;
 }
 
 export interface PierTwoInfo {
   ethereum: PierTwoEthereumInfo;
   solana: PierTwoSolanaInfo;
+}
+
+export interface SystemInfoResponse {
+  /**
+   * Version of the API Gateway service
+   * @example "1.0.0"
+   */
+  apiGatewayVersion: string;
+  /**
+   * Version of the internal Ethereum staking API
+   * @example "1.0.0"
+   */
+  ethStakingApiVersion: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -704,7 +769,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Fetch solana staking accounts associated to your account.
      *
-     * @tags solana
+     * @tags Solana
      * @name GetStakes
      * @request GET:/solana/stakes
      */
@@ -731,7 +796,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Generate a stake transaction payload containing one or more instructions. Possible instruction types and inputs are described below: This returns a serialized transaction which can be deserialized, signed and submitted to the network. See [@solana/web.js](https://solana-labs.github.io/solana-web3.js/index.html) docs for deserializing [Versioned Messages](https://solana-labs.github.io/solana-web3.js/variables/VersionedMessage-1.html) and working with [Versioned Transactions](https://solana-labs.github.io/solana-web3.js/classes/VersionedTransaction.html) ***N.B any instructions operating on an existing stake account must specify target stakePubkey in the request body seperate to the instructions*** ***Create and delegate new stake account*** ~~~ { type: 'createAndDelegate' input: { fromPubkey: pubkey of funding address, stakeAuthority: address authorized to delegate and undelegate stake, withdrawAuthority: address authorized to withdraw stake, lamports: amount of lamports to stake (1 sol = 1000000000 lamports), reference: an arbitrary reference used to identify/group the stake within the Pier Two platform, label: an arbitrary label/memo for use within the Pier Two platform } } ~~~ ***Create a new stake account (same input data as 'createAndDelegate')*** ~~~ { type: 'create' input: { fromPubkey: pubkey of funding address, stakeAuthority: address authorized to delegate and undelegate stake, withdrawAuthority: address authorized to withdraw stake, lamports: amount of lamports to stake (1 sol = 1000000000 lamports), reference: an arbitrary reference used to identify/group the stake within the Pier Two platform, label: an arbitrary label/memo for use within the Pier Two platform } } ~~~ ***Delegate an existing stake account*** ~~~ { type: 'delegate' input: { authorizedPubkey: address authorized to delegate and undelegate stake } } ~~~ ***Undelegate (deactivate) an existing stake account*** ~~~ { type: 'undelegate' input: { authorizedPubkey: address authorized to delegate and undelegate stake } } ~~~ ***Withdraw inactive stake (deactivated stake balance or any other excess SOL held by account)*** ~~~ { type: 'withdraw' input: { toPubkey: recipient of withdrawn funds, authorizedPubkey: address authorized to withdraw stake, lamports: amount of lamports to withdraw (1 sol = 1000000000 lamports), } } ~~~ ***Merge an eligible stake account into target stake account*** An eligible stake account must have the same stakeAuthority and withdrawAuthority and have been active for an entire epoch and earned rewards ~~~ { type: 'merge' input: { sourceStakePubkey: address of stake account to merge (this account will be dissolved/closed onchain), authorizedPubkey: address authorized to delegate and undelegate } } ~~~
      *
-     * @tags solana
+     * @tags Solana
      * @name BuildTransactionPayload
      * @request POST:/solana/stake/buildTransaction
      */
@@ -753,7 +818,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags solana
+     * @tags Solana
      * @name GetPerformanceSummary
      * @summary Returns performance breakdown summary
      * @request GET:/solana/stake/performanceSummary
@@ -781,7 +846,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags solana
+     * @tags Solana
      * @name GetStakeAccoutDailyRewards
      * @summary Returns daily rewards stats of specified stake accounts
      * @request GET:/solana/stake/dailyRewards
@@ -815,7 +880,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags solana
+     * @tags Solana
      * @name GetStakeRewardsChartData
      * @summary Retrieve summarized staking rewards chart data
      * @request GET:/solana/stake/rewardsChartData
@@ -851,7 +916,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Returns current epoch staking reward info
      *
-     * @tags solana
+     * @tags Solana
      * @name GetNetworkStakingInfo
      * @request GET:/solana/stake/networkInfo
      */
@@ -872,7 +937,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Fetch basic account details
      *
-     * @tags account
+     * @tags Account
      * @name GetAccount
      * @request GET:/account
      */
@@ -892,7 +957,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Fetch api keys for your account
      *
-     * @tags account
+     * @tags Account
      * @name GetApiKeys
      * @request GET:/account/apikeys
      */
@@ -919,7 +984,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Add new api key for your account
      *
-     * @tags account
+     * @tags Account
      * @name AddNewApiKey
      * @request POST:/account/apikeys
      */
@@ -941,7 +1006,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Revoke api key for your account
      *
-     * @tags account
+     * @tags Account
      * @name RevokeApiKey
      * @request PUT:/account/apikeys/{key}
      */
@@ -961,7 +1026,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Create a new user from a valid JWT
      *
-     * @tags account
+     * @tags Account
      * @name Signup
      * @request POST:/account/signup
      */
@@ -980,9 +1045,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   };
   ethereum = {
     /**
-     * @description Request one or more new validators
+     * @description **DEPRECATED** use `/stakeV2` instead. Request one or more new validators. Validators created via this endpoint will have `0x01` withdrawal credentials.
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name CreateStake
      * @request POST:/ethereum/stake
      */
@@ -1002,9 +1067,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Request one or more new validators, returning the individual validators in the response
+     * @description Request one or more new validators, returning the individual validator details in the response. Validators created via this endpoint will have `0x01` withdrawal credentials.
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name CreateStakeV2
      * @request POST:/ethereum/stakeV2
      */
@@ -1024,9 +1089,31 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Stake an arbitrary amount of ETH (Denoted in gwei) post-Pectra. This endpoint will calculate and create the appropriate number of validators for the staked amount. The data required for the deposit transaction will be returned in the response. Validators created via this endpoint will have `0x02` withdrawal credentials.
+     *
+     * @tags Ethereum
+     * @name CreateStakeV3
+     * @request POST:/ethereum/stakeV3
+     */
+    createStakeV3: (data: CreateStakePectraDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CreateStakeV2Response;
+        },
+        any
+      >({
+        path: `/ethereum/stakeV3`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Abandon stake request and all associated validators
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name AbandonStake
      * @request PUT:/ethereum/stake/{stakeId}/abandon
      */
@@ -1046,7 +1133,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Fetch a single staking request by stakeId
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GetStake
      * @request GET:/ethereum/stake/{stakeId}
      */
@@ -1066,7 +1153,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Fetch deposit data for all validators in stake request
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GetDepositDataForStake
      * @request GET:/ethereum/stake/{stakeId}/depositdata
      */
@@ -1086,7 +1173,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Fetch all staking requests for your account
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GetStakes
      * @request GET:/ethereum/stakes
      */
@@ -1112,7 +1199,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Fetch all staking requests with validator status counts
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GetStakesWithValidatorStatusCounts
      * @request GET:/ethereum/stakesWithValidatorStatusCounts
      */
@@ -1139,7 +1226,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Fetch validators for your account, in order of initial request
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GetOrderedValidators
      * @summary Fetch validators for your account
      * @request GET:/ethereum/orderedValidators
@@ -1171,7 +1258,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Generate one or more pre-signed exit messages for a specified list of public keys
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GenPresignedExitMsg
      * @request POST:/ethereum/genPresignedExitMsg
      */
@@ -1193,7 +1280,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Broadcast a pre-signed exit message to the beacon chain
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name BroadcastPresignedExitMessage
      * @request POST:/ethereum/broadcastPresignedExitMsg
      */
@@ -1215,7 +1302,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Generate one or more pre-signed exit messages for a specified list of public keys and broadcast the message to a beacon node
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name BulkWithdraw
      * @request POST:/ethereum/bulkWithdrawValidators
      */
@@ -1237,7 +1324,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description This endpoint will simulate all pending withdrawals up to and including the specified validator indexes. The simulation calculates the estimated exit as if the exit had been processed at that moment in time. The results are indicative and can only account for the state of the exit queue at the time of simulating. If this is being used optimise validator exits, caution should be taken since missing the `predictedExitSubmissionDeadlineEpoch` will result in the longest possible period of no rewards earned. Submitting exit messages during the deadline epoch can be risky, some time (2-4 minutes) should be allowed for the beacon chain to process any exit messages broadcasted to the network. We recommend submitting exit messages at least an hour before the deadline epoch to account for unexpected changes to the exit queue. You should also consider the impact of your own withdrawals on the exit queue if you are exiting large amounts of validators at once. This endpoint will return an error in the following situations: - one or more invalid validator indexes are passed - one or more of the specified validators does not have withdrawal credentials set (0x01...) - one or more validators has already exited - one or more validators is not known to the beacon chain Below is a description of each of the fields returned: - **expectedExitEpoch** - the epoch in which the validator would exit the Beacon chain if its exit was processed at the current time - **expectedFullWithdrawalEligibilityEpoch** - the epoch where the validator would become eligible for receiving the full staked balance ETH plus any excess - **predictedUpcomingWithdrawalEpoch** - the predicted epoch in which the validator's withdrawal will be processed by the Beacon chain, taking the current exit queue into account - **predictedExitSubmissionDeadlineEpoch** - the deadline epoch in which the validator should already be queued for exiting the Beacon chain
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name EstimateWithdrawalTimes
      * @summary Calculate estimated withdrawal times for given validator indexes
      * @request POST:/ethereum/estimateWithdrawalTimes
@@ -1260,7 +1347,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description By default, validator records are populated with deposit transaction data suitable for deposits of 32ETH. This endpoint can be used in situations where you want to perform deposits of amounts other than 32ETH. This will generate the deposit transaction data for one or more validators corresponding to the amount(s) specified in the request body. ***Note that this will not replace nor invalidate the deposit data that is stored on the validator records themselves*** This endpoint will return an error in the following situations: - an invalid amount is specified (<= 0 or > 32000000000) - one or more of the specified validators is not in a WAITING_DEPOSIT state - one or more validators is not associated your account - the list of specified validators contains duplicate pubkeys
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GenerateDepositData
      * @summary Generate deposit data with arbitrary ETH amounts for specified validator pubkeys
      * @request POST:/ethereum/validators/generateDepositData
@@ -1283,7 +1370,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Returns the estimated wait times and other queue stats for entering and exiting validators.
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GetValidatorQueueStats
      * @request GET:/ethereum/validators/queueStats
      */
@@ -1303,7 +1390,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GetValidatorInfo
      * @summary Fetch information of validators, returns info for all active validators if none are specified
      * @request GET:/ethereum/validators/info
@@ -1331,7 +1418,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GetValidatorDailyRewards
      * @summary Returns daily rewards stats of validators, returns stats for all active validators if none are specified
      * @request GET:/ethereum/validators/dailyRewards
@@ -1365,7 +1452,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GetValidatorDailyPerformance
      * @summary Returns daily performance stats of validators, returns stats for all active validators if none are specified
      * @request GET:/ethereum/validators/performance
@@ -1393,7 +1480,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GetValidatorRewardsChartData
      * @summary Retrieve summarized validator rewards chart data
      * @request GET:/ethereum/validators/rewardsChartData
@@ -1431,7 +1518,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Returns the dashboard summary. Individual stakes are flattened
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GetValidatorDashboardSummary
      * @request GET:/ethereum/validators/dashboard
      */
@@ -1451,7 +1538,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Returns the accounts summary. Individual stakes are not flattened
      *
-     * @tags ethereum
+     * @tags Ethereum
      * @name GetValidatorAccountsSummary
      * @request GET:/ethereum/validators/accounts
      */
@@ -1467,12 +1554,44 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags Ethereum
+     * @name GetValidatorIncomeHistory
+     * @summary Retrieve validator income history
+     * @request GET:/ethereum/validators/incomeHistory
+     */
+    getValidatorIncomeHistory: (
+      query: {
+        /** Time frame for the data: 1D (1 day in 1-hour chunks) or 1W (1 week in 6-hour chunks) */
+        timeFrame: "1D" | "1W";
+        /** comma seperated list of validator indexes */
+        validatorIds?: string;
+        /** account reference to use as filter */
+        account?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: ValidatorIncomeHistory[];
+        },
+        any
+      >({
+        path: `/ethereum/validators/incomeHistory`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
   };
   public = {
     /**
      * @description get data for rendering network statistics (asset prices, assets UAM, etc)
      *
-     * @tags public
+     * @tags Public
      * @name GetWebsiteData
      * @request GET:/public/websiteData
      */
@@ -1499,7 +1618,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description get static network config such as contract addresses and validator addresses
      *
-     * @tags public
+     * @tags Public
      * @name NetworkConfig
      * @request GET:/public/networkConfig
      */
@@ -1511,6 +1630,26 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         any
       >({
         path: `/public/networkConfig`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get system information including API versions
+     *
+     * @tags Public
+     * @name GetSystemInfo
+     * @request GET:/public/systemInfo
+     */
+    getSystemInfo: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: SystemInfoResponse;
+        },
+        any
+      >({
+        path: `/public/systemInfo`,
         method: "GET",
         format: "json",
         ...params,
