@@ -522,6 +522,7 @@ export interface PierTwoEthereumInfo {
   currentEpoch: number;
   pectraForkEpoch: number;
   network: string;
+  chainId: number;
 }
 
 export interface PierTwoSolanaInfo {
