@@ -224,6 +224,9 @@ export interface Validator {
   status: string;
   suggestedFeeRecipient: string;
   validatorIndex: number;
+  statusLastChecked: string;
+  balanceGwei: string;
+  effectiveBalanceGwei: string;
 }
 
 export interface StakeDetailsWithValidators {
@@ -324,6 +327,9 @@ export interface ValidatorWithStakeDetails {
   status: string;
   suggestedFeeRecipient: string;
   validatorIndex: number;
+  statusLastChecked: string;
+  balanceGwei: string;
+  effectiveBalanceGwei: string;
   withdrawalAddress: string;
   reference: string;
   label: string;
@@ -940,6 +946,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Account
      * @name GetAccount
+     * @summary Fetch basic account details
      * @request GET:/account
      */
     getAccount: (params: RequestParams = {}) =>
