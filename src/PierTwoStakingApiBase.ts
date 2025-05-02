@@ -86,7 +86,7 @@ export interface BuildTransactionPayloadRequestDto {
    * target stake account to which this operation relates
    * @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY"
    */
-  stakePubkey: string;
+  stakePubkey?: string;
   /** @example [{"type":"createAndDelegate","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"create","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"delegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"undelegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"withdraw","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","toPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","lamports":1000000000}},{"type":"merge","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","sourceStakePubkey":"2niBr5ra1jswrGRkxVG42GC63fTQ7TtE6uTiNeuJTu67"}}] */
   instructions: StakeInstructionWithInputs[];
 }
@@ -766,7 +766,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title Pier Two Staking API
- * @version 1.0.56-mainnet
+ * @version 1.0.57-mainnet
  * @baseUrl https://gw-1.api.piertwo.io
  * @contact
  *
