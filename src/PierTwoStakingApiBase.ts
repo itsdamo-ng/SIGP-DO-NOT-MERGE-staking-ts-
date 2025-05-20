@@ -367,6 +367,7 @@ export interface BulkWithdrawError {
 
 export interface EstimatedWithdrawalTimes {
   validatorIndex: number;
+  validation: string;
   expectedExitEpoch: number;
   expectedFullWithdrawalEligibilityEpoch: number;
   predictedUpcomingWithdrawalEpoch: number;
@@ -766,7 +767,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title Pier Two Staking API
- * @version 1.0.57-mainnet
+ * @version 1.0.64-mainnet
  * @baseUrl https://gw-1.api.piertwo.io
  * @contact
  *
