@@ -1,4 +1,4 @@
-import { encodeFunctionData } from 'viem'
+import { encodeFunctionData, parseEther } from 'viem'
 
 import { 
   Api, 
@@ -7,6 +7,8 @@ import {
 } from "./PierTwoStakingApiBase";
 
 import { ethereumBatchDeposit } from "./abi/ethereumBatchDeposit";
+import { ethereumPectraBatchDepositAbi } from "./abi/ethereumPectraBatchDeposit";
+import { with0xPrefix } from "./utils";
 
 export enum EthereumValidatorStatus {
   WAITING_KEYGEN = 'WAITING_KEYGEN',
@@ -194,6 +196,29 @@ export class PierTwoStakingApi extends Api<null> {
         abi: ethereumBatchDeposit,
         functionName: 'batchDeposit',
         args: [pubkeys, withdrawalCredentials, signatures, depositDataRoots]
+      })
+    },
+
+    /**
+     * @description generate call data for a post-pectra batch validator deposit
+     * the input data required for this is available on Pier Two Validator records
+     *
+     * @tags utils
+     */
+    generatePectraBatchDepositCallData(args: {
+      depositData: ValidatorDepositJson[]
+    }) {
+      const batchDepositArgs = args.depositData.map(({ pubkey, withdrawal_credentials, signature, amount }) => ({
+        pubKey: with0xPrefix(pubkey),
+        withdrawalCredentials: with0xPrefix(withdrawal_credentials),
+        signature: with0xPrefix(signature),
+        amount: parseEther(amount.toString(), "gwei")
+      }));
+
+      return encodeFunctionData({
+        abi: ethereumPectraBatchDepositAbi,
+        functionName: 'batchDeposit',
+        args: [batchDepositArgs]
       })
     }
   }
