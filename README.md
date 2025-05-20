@@ -10,8 +10,8 @@ A JS development kit with supported TypeScript typings.
 `npx serve ./docs`
 
 ### PierTwoStakingApi
-The main class for interacting with the PierTwo staking platform. 
-All endpoints in the [PierTwo Staking Api](https://gw-1.api.piertwo.io/docs) are implemented.
+The main class for interacting with the Pier Two staking platform. 
+All endpoints in the [Pier Two Staking Api](https://gw-1.api.piertwo.io/docs) are implemented.
 Read [full documentation here](https://sdk.piertwo.com/).
 
 ```javascript
