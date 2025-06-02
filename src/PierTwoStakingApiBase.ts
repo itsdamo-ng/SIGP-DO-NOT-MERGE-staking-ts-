@@ -389,6 +389,154 @@ export interface GenerateDepositDataDto {
   deposits: ValidatorDeposit[];
 }
 
+export interface EthereumTransactionCraftingResponse {
+  /**
+   * target contract address
+   * @example "0x0000000000000000000000000000000000000000"
+   */
+  to: string;
+  /**
+   * serialised calldata
+   * @example "0x02f86d59085208943b57d2c0f0db7b7a5e080c0"
+   */
+  data: string;
+  /**
+   * ETH value to send with transaction (in wei)
+   * @example "1000000000000000000"
+   */
+  value: string;
+  /**
+   * nonce value, this is based on the provided fromAddress
+   * @example 3
+   */
+  nonce: number;
+  /**
+   * Gas limit for the transaction
+   * @example "21000"
+   */
+  gas: string;
+  /**
+   * Ethereum network chainId
+   * @example 560048
+   */
+  chainId: number;
+  /**
+   * Maximum fee per gas in wei
+   * @example "20000000000"
+   */
+  maxFeePerGas: string;
+  /**
+   * Maximum priority fee per gas in wei
+   * @example "1000000000"
+   */
+  maxPriorityFeePerGas: string;
+  /**
+   * serialized unsigned transaction made up of other returned fields
+   * @example "0x02f86d01808459682f00825208943b3b57de6e72c0f0db7b7a73b3e3e5e5e5e5e5e588016345785d8a000080c0"
+   */
+  serialized: string;
+}
+
+export interface EthereumValidatorTopupDto {
+  /**
+   * The address to send the transaction from, this is required for accurate gas estimation and nonce calculation
+   * @example "0x0000000000000000000000000000000000000000"
+   */
+  fromAddress: string;
+  /**
+   * multiplier to apply to gas estimate, defaults to 1.2
+   * @example 1.2
+   */
+  gasEstimateMultiplier: number;
+  /**
+   * Validator public key to top up
+   * @example "0xa20d2ba70419cb3922985488e339736ab32e6184f11708d2333f65b14f70cf47365b538c32eff237cdaf293ea2bcfb03"
+   */
+  validatorPubkey: string;
+  /**
+   * Amount of ETH to deposit in wei
+   * @example "1000000000000000000"
+   */
+  amountWei: string;
+}
+
+export interface EthereumValidatorTopupBaseDto {
+  /**
+   * Validator public key to top up
+   * @example "0xa20d2ba70419cb3922985488e339736ab32e6184f11708d2333f65b14f70cf47365b538c32eff237cdaf293ea2bcfb03"
+   */
+  validatorPubkey: string;
+  /**
+   * Amount of ETH to deposit in wei
+   * @example "1000000000000000000"
+   */
+  amountWei: string;
+}
+
+export interface EthereumValidatorBatchTopupDto {
+  /**
+   * The address to send the transaction from, this is required for accurate gas estimation and nonce calculation
+   * @example "0x0000000000000000000000000000000000000000"
+   */
+  fromAddress: string;
+  /**
+   * multiplier to apply to gas estimate, defaults to 1.2
+   * @example 1.2
+   */
+  gasEstimateMultiplier: number;
+  /**
+   * Array of validator topup details
+   * @example [{"validatorPubkey":"0xa20d2ba70419cb3922985488e339736ab32e6184f11708d2333f65b14f70cf47365b538c32eff237cdaf293ea2bcfb03","amountWei":"1000000000000000000"}]
+   */
+  deposits: EthereumValidatorTopupBaseDto[];
+}
+
+export interface EthereumValidatorWithdrawDto {
+  /**
+   * The address to send the transaction from, this is required for accurate gas estimation and nonce calculation
+   * @example "0x0000000000000000000000000000000000000000"
+   */
+  fromAddress: string;
+  /**
+   * multiplier to apply to gas estimate, defaults to 1.2
+   * @example 1.2
+   */
+  gasEstimateMultiplier: number;
+  /**
+   * Validator public key to withdraw from
+   * @example "a20d2ba70419cb3922985488e339736ab32e6184f11708d2333f65b14f70cf47365b538c32eff237cdaf293ea2bcfb03"
+   */
+  validatorPubkey: string;
+  /**
+   * Amount of ETH to withdraw in gwei
+   * @example "1000000000"
+   */
+  amountGwei: string;
+}
+
+export interface EthereumValidatorConsolidateDto {
+  /**
+   * The address to send the transaction from, this is required for accurate gas estimation and nonce calculation
+   * @example "0x0000000000000000000000000000000000000000"
+   */
+  fromAddress: string;
+  /**
+   * multiplier to apply to gas estimate, defaults to 1.2
+   * @example 1.2
+   */
+  gasEstimateMultiplier: number;
+  /**
+   * Source validator public key (will be consolidated from)
+   * @example "a20d2ba70419cb3922985488e339736ab32e6184f11708d2333f65b14f70cf47365b538c32eff237cdaf293ea2bcfb03"
+   */
+  sourceValidatorPubkey: string;
+  /**
+   * Target validator public key (will be consolidated to)
+   * @example "b31f3ba80429db4922985488e339736ab32e6184f11708d2333f65b14f70cf47365b538c32eff237cdaf293ea2bcfb04"
+   */
+  targetValidatorPubkey: string;
+}
+
 export interface QueueStats {
   /** @example "2 days" */
   entryWaitingTime: string;
@@ -525,6 +673,9 @@ export interface PierTwoEigenLayerInfo {
 export interface PierTwoEthereumInfo {
   batchDepositContractAddress: string;
   pectraBatchDepositContractAddress: string;
+  beaconDepositContractAddress: string;
+  ethValidatorWithdrawalContractAddress: string;
+  ethValidatorConsolidationContractAddress: string;
   eigenlayer: PierTwoEigenLayerInfo;
   currentEpoch: number;
   pectraForkEpoch: number;
@@ -767,7 +918,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title Pier Two Staking API
- * @version 1.0.64-mainnet
+ * @version 1.0.69-mainnet
  * @baseUrl https://gw-1.api.piertwo.io
  * @contact
  *
@@ -1367,6 +1518,98 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         any
       >({
         path: `/ethereum/validators/generateDepositData`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description **This endpoint is only to be used with active 0x02 validators, using this to perform initial activation deposits will result in a loss of funds.** Generate transaction data for depositing additional ETH to an active 0x02 validator. This endpoint will generate a transaction for interacting with the [canonical beacon deposit contract](https://etherscan.io/address/0x00000000219ab540356cBB839Cbe05303d7705Fa). The generated transaction will contain a dummy signature and deposit data root [since signature validation is skipped for active validators](https://eth2book.info/capella/part2/deposits-withdrawals/staking/#top-up-deposits). The returned transaction data must be signed and broadcast by the user.
+     *
+     * @tags Ethereum
+     * @name CraftEthValidatorTopupTx
+     * @summary Generate validator top-up transaction
+     * @request POST:/ethereum/txcrafting/validators/topup
+     */
+    craftEthValidatorTopupTx: (data: EthereumValidatorTopupDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: EthereumTransactionCraftingResponse;
+        },
+        any
+      >({
+        path: `/ethereum/txcrafting/validators/topup`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description **This endpoint is only to be used with active 0x02 validators, using this to perform initial activation deposits will result in a loss of funds.** Generate transaction data for depositing additional ETH to multiple active 0x02 validators. This endpoint will generate a transaction for interacting with our [pectra batch deposit implementation](https://docs.piertwo.com/docs/batch-deposit-contract). The generated transaction will contain a dummy signature and deposit data root [since signature validation is skipped for active validators](https://eth2book.info/capella/part2/deposits-withdrawals/staking/#top-up-deposits). The returned transaction data must be signed and broadcast by the user.
+     *
+     * @tags Ethereum
+     * @name CraftEthValidatorBatchTopupTx
+     * @summary Generate batch validator top-up transaction
+     * @request POST:/ethereum/txcrafting/validators/batchtopup
+     */
+    craftEthValidatorBatchTopupTx: (data: EthereumValidatorBatchTopupDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: EthereumTransactionCraftingResponse;
+        },
+        any
+      >({
+        path: `/ethereum/txcrafting/validators/batchtopup`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Generate transaction data for performing an [EIP 7002 on-chain validator withdrawal](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-7002.md#abstract). This can be used to withdraw accrued rewards exceeding 32 ETH. The withdrawal amount will be capped such that the validator balance does not fall below 32 ETH. This can be used to perform a full exit by specifying an amount of 0. The returned transaction data must be signed and broadcast by the user.
+     *
+     * @tags Ethereum
+     * @name CraftEthValidatorWithdrawTx
+     * @summary Generate validator withdrawal transaction
+     * @request POST:/ethereum/txcrafting/validators/withdraw
+     */
+    craftEthValidatorWithdrawTx: (data: EthereumValidatorWithdrawDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: EthereumTransactionCraftingResponse;
+        },
+        any
+      >({
+        path: `/ethereum/txcrafting/validators/withdraw`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Generate transaction data for performing an [EIP 7251 on-chain validator consolidation](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-7251.md#abstract). This can be used to upgrade a single validator by specifying itself as both the source and target. Or to combine 2 active validators into a single validator. The consolidation transaction must be signed and submitted by the address controlling the source validator (the configured withdrawal address).
+     *
+     * @tags Ethereum
+     * @name CraftEthValidatorConsolidateTx
+     * @summary Generate validator consolidation transaction
+     * @request POST:/ethereum/txcrafting/validators/consolidate
+     */
+    craftEthValidatorConsolidateTx: (data: EthereumValidatorConsolidateDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: EthereumTransactionCraftingResponse;
+        },
+        any
+      >({
+        path: `/ethereum/txcrafting/validators/consolidate`,
         method: "POST",
         body: data,
         type: ContentType.Json,
