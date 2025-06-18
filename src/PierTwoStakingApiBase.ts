@@ -642,6 +642,657 @@ export interface ValidatorIncomeHistory {
   totalIncomeWei: string;
 }
 
+export interface UtxoStatus {
+  confirmed: boolean;
+  block_height: number;
+  block_hash: string;
+  block_time: number;
+}
+
+export interface GetAddressUtxos {
+  txid: string;
+  vout: number;
+  status: UtxoStatus;
+  value: number;
+}
+
+export interface BuildStakingTransactionResponseDto {
+  /**
+   * The unsigned staking transaction PSBT in hex format
+   * @example "70736274ff01007d020000000125e99b2..."
+   */
+  unsignedStakingTx: string;
+  /**
+   * The transaction ID of the staking transaction
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  stakingTxId: string;
+}
+
+export interface UtxoDto {
+  /**
+   * Transaction ID
+   * @example "f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16"
+   */
+  txid: string;
+  /**
+   * Output index
+   * @example 0
+   */
+  vout: number;
+}
+
+export interface BuildStakingTransactionDto {
+  /**
+   * Public key in hex format (compressed or uncompressed)
+   * @example "02a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943c2b752a68e2a47e247c7"
+   */
+  publicKey: string;
+  /**
+   * Staking address (must be valid for current network)
+   * @example "bc1..."
+   */
+  stakingAddress: string;
+  /**
+   * Amount in satoshis
+   * @example 1000000
+   */
+  amountSatoshi: number;
+  /**
+   * Time lock in blocks
+   * @example 10000
+   */
+  timeLock: number;
+  /** Array of UTXOs to use for the transaction */
+  utxos?: UtxoDto[];
+  /**
+   * Whether to automatically fund the transaction
+   * @default false
+   */
+  autoFund?: boolean;
+  /**
+   * Fee rate in satoshis per byte
+   * @example 10
+   */
+  feeRate: number;
+}
+
+export interface TransactionResponseDto {
+  /**
+   * The transaction ID
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  txId: string;
+}
+
+export interface SubmitStakingTransactionDto {
+  /**
+   * The transaction ID of the staking transaction
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  stakingTxId: string;
+  /**
+   * The signed staking transaction PSBT in hex format
+   * @example "70736274ff01007d020000000125e99b2..."
+   */
+  signedStakingTx: string;
+}
+
+export interface GetDelegationPayloadsResponseDto {
+  /** The slashing transaction PSBT in hex format that needs to be signed */
+  slashingPsbtHex: string;
+  /** The unbonding slashing transaction PSBT in hex format that needs to be signed */
+  unbondingSlashingPsbtHex: string;
+  /** The Babylon address that needs to be signed as proof of ownership */
+  babylonAddress: string;
+}
+
+export interface GetDelegationPayloadsDto {
+  /**
+   * The transaction ID of the staking transaction
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  stakingTxId: string;
+  /**
+   * Babylon address
+   * @example "bbn1abc123..."
+   */
+  babylonAddress: string;
+  /**
+   * Signed staking transaction hex (required for post-stake flow only)
+   * @example "0200000001..."
+   */
+  signedStakingTxHex?: string;
+}
+
+export interface BuildRegistrationTransactionResponseDto {
+  /** The unsigned Babylon transaction in base64 format ready to be signed and broadcast */
+  transaction: string;
+  /** The estimated gas required for the transaction on the Babylon chain */
+  gasEstimate: number;
+}
+
+export interface SignedPayloadsDto {
+  /**
+   * Slashing PSBT hex string
+   * @example "70736274..."
+   */
+  slashingPsbtHex: string;
+  /**
+   * Unbonding slashing PSBT hex string
+   * @example "70736274..."
+   */
+  unbondingSlashingPsbtHex: string;
+  /**
+   * Babylon address (signed message)
+   * @example "bbn..."
+   */
+  babylonAddress: string;
+}
+
+export interface BuildRegistrationTransactionDto {
+  /**
+   * Staking transaction ID
+   * @example "txid123..."
+   */
+  stakingTxId: string;
+  /** Signed payloads containing PSBT hex strings and Babylon address */
+  signedPayloads: SignedPayloadsDto;
+}
+
+export interface StakingTransactionDto {
+  txid: string;
+  confirmed: boolean;
+  broadcasted: boolean;
+  depth: number;
+}
+
+export interface CovenantSignatureDto {
+  /** The covenant public key */
+  cov_pk: string;
+  /** Array of adaptor signatures */
+  adaptor_sigs: string[];
+}
+
+export interface CovenantUnbondingSignatureDto {
+  /** The covenant public key */
+  pk: string;
+  /** The signature */
+  sig: string;
+}
+
+export interface UndelegationResponseDto {
+  /** The hex-encoded unbonding transaction */
+  unbonding_tx_hex: string;
+  /** List of covenant unbonding signatures */
+  covenant_unbonding_sig_list: CovenantUnbondingSignatureDto[];
+  /** The hex-encoded slashing transaction */
+  slashing_tx_hex: string;
+  /** The delegator's slashing signature in hex */
+  delegator_slashing_sig_hex: string;
+  /** List of covenant slashing signatures */
+  covenant_slashing_sigs: CovenantSignatureDto[];
+  /** Delegator unbonding info response */
+  delegator_unbonding_info_response?: object | null;
+}
+
+export interface BtcDelegationDto {
+  /** The staker's address */
+  staker_addr: string;
+  /** The Bitcoin public key */
+  btc_pk: string;
+  /** List of finality provider Bitcoin public keys */
+  fp_btc_pk_list: string[];
+  /** The staking time in blocks */
+  staking_time: number;
+  /** The start height of the delegation */
+  start_height: number;
+  /** The end height of the delegation */
+  end_height: number;
+  /** Total satoshis being staked */
+  total_sat: string;
+  /** The hex-encoded staking transaction */
+  staking_tx_hex: string;
+  /** The hex-encoded slashing transaction */
+  slashing_tx_hex: string;
+  /** The delegator's slash signature in hex */
+  delegator_slash_sig_hex: string;
+  /** List of covenant signatures */
+  covenant_sigs: CovenantSignatureDto[];
+  /** The staking output index */
+  staking_output_idx: number;
+  /** Whether the delegation is active */
+  active: boolean;
+  /** Description of the delegation status */
+  status_desc: string;
+  /** The unbonding time in blocks */
+  unbonding_time: number;
+  /** The undelegation response */
+  undelegation_response?: UndelegationResponseDto | null;
+  /** The parameters version */
+  params_version: number;
+}
+
+export interface DelegationInfoResponseDto {
+  /** The BTC delegation information */
+  btc_delegation: BtcDelegationDto;
+}
+
+export interface UnbondingTransactionDto {
+  txid: string;
+  confirmed: boolean;
+  broadcasted: boolean;
+}
+
+export interface GetStakingStatusResponseDto {
+  status: string;
+  isRegistered: boolean;
+  statusExplanation: string;
+  stakingTransaction: StakingTransactionDto;
+  delegationInfo: DelegationInfoResponseDto | null;
+  unbondingTransaction: UnbondingTransactionDto | null;
+  /**
+   * The type of registration (pre-stake or post-stake)
+   * @example "pre-stake"
+   */
+  registrationType?: string;
+  /** Pre-stake verification status if applicable */
+  preStakeStatus?: "pending" | "verified" | "rejected";
+  /**
+   * Babylon registration transaction hash for pre-stake
+   * @example "ABC123..."
+   */
+  babylonRegistrationTxHash?: string;
+  /**
+   * Whether the pre-stake can be finalized
+   * @example false
+   */
+  canFinalize?: boolean;
+  /** Covenant signatures if verified */
+  covenantSignatures?: string[];
+  /**
+   * Unsigned staking PSBT for pre-stake resumption
+   * @example "70736274ff0100..."
+   */
+  unsignedStakingPsbt?: string;
+}
+
+export interface BuildUnbondingTransactionResponseDto {
+  /**
+   * The partially signed Bitcoin transaction (PSBT) that needs to be signed by the staker
+   * @example "70736274ff01007d020000000125e99b2..."
+   */
+  unbondingPsbt: string;
+}
+
+export interface StakingTxRequestDto {
+  /**
+   * The transaction ID of the staking transaction
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  stakingTxId: string;
+}
+
+export interface SubmitUnbondingTransactionDto {
+  /**
+   * The transaction ID of the staking transaction
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  stakingTxId: string;
+  /**
+   * The signed unbonding transaction PSBT in hex format
+   * @example "70736274ff01007d020000000125e99b2..."
+   */
+  signedUnbondingTx: string;
+}
+
+export interface BuildWithdrawalTransactionResponseDto {
+  /**
+   * The unsigned withdrawal PSBT in hex format
+   * @example "70736274ff0100..."
+   */
+  withdrawalPsbt: string;
+  /**
+   * The fee rate used for the withdrawal transaction (sat/vB)
+   * @example 10
+   */
+  feeRate: number;
+}
+
+export interface BuildWithdrawalTransactionDto {
+  /**
+   * The transaction ID of the staking transaction
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  stakingTxId: string;
+  /**
+   * The type of withdrawal
+   * @example "early_unbonded"
+   */
+  withdrawalType: "early_unbonded" | "timelock_expired" | "slashing";
+  /**
+   * Fee rate in satoshis per byte
+   * @example 10
+   */
+  feeRate: number;
+}
+
+export interface SubmitWithdrawalTransactionDto {
+  /**
+   * The transaction ID of the staking transaction
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  stakingTxId: string;
+  /**
+   * The signed withdrawal transaction in hex format
+   * @example "02000000..."
+   */
+  signedWithdrawalTx: string;
+  /**
+   * The type of withdrawal
+   * @example "early_unbonded"
+   */
+  withdrawalType: "early_unbonded" | "timelock_expired" | "slashing";
+}
+
+export interface StakingParamsDto {
+  /**
+   * Minimum staking value in satoshis
+   * @example 50000
+   */
+  minStakingValueSat: number;
+  /**
+   * Maximum staking value in satoshis
+   * @example 10000000
+   */
+  maxStakingValueSat: number;
+  /**
+   * Minimum staking time in blocks
+   * @example 10000
+   */
+  minStakingTimeBlocks: number;
+  /**
+   * Maximum staking time in blocks
+   * @example 100000
+   */
+  maxStakingTimeBlocks: number;
+  /**
+   * Unbonding time in blocks
+   * @example 1000
+   */
+  unbondingTime: number;
+  /**
+   * Number of Bitcoin confirmations required before delegation
+   * @example 10
+   */
+  confirmationDepth: number;
+  /**
+   * Current staking parameter version
+   * @example 0
+   */
+  version: number;
+  /**
+   * Whether staking is currently open
+   * @example true
+   */
+  isStakingOpen: boolean;
+}
+
+export interface GetStakingParamsResponseDto {
+  /** Current staking parameters */
+  params: StakingParamsDto;
+}
+
+export interface StakingDetailDto {
+  /**
+   * The staking transaction ID
+   * @example "f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16"
+   */
+  stakingTxId: string;
+  /**
+   * Amount staked in satoshis
+   * @example 100000
+   */
+  amountSatoshi: number;
+  /**
+   * Time lock in blocks
+   * @example 10000
+   */
+  timeLock: number;
+  /**
+   * Current status of the staking
+   * @example "registration-transaction-confirmed"
+   */
+  status: string;
+  /**
+   * Human-readable description of the current status
+   * @example "The registration transaction has been broadcasted and confirmed, your staking is now active"
+   */
+  statusDescription: string;
+  /**
+   * Whether the staking is registered on Babylon
+   * @example true
+   */
+  isRegistered: boolean;
+  /**
+   * Bitcoin staking address
+   * @example "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq"
+   */
+  stakingAddress: string;
+  /**
+   * Babylon address associated with this stake
+   * @example "bbn1..."
+   */
+  babylonAddress?: string;
+  /**
+   * Public key of the finality provider
+   * @example "02abc..."
+   */
+  finalityProviderBtcPk: string;
+  /**
+   * Unbonding transaction ID if unbonding was initiated
+   * @example "abc123..."
+   */
+  unbondingTxId?: string;
+  /**
+   * Withdrawal transaction ID if withdrawal was completed
+   * @example "def456..."
+   */
+  withdrawalTxId?: string;
+  /**
+   * When the staking was created
+   * @format date-time
+   * @example "2024-01-01T00:00:00.000Z"
+   */
+  createdAt?: string;
+  /**
+   * When the staking was last updated
+   * @format date-time
+   * @example "2024-01-01T00:00:00.000Z"
+   */
+  updatedAt?: string;
+  /**
+   * The type of registration (pre-stake or post-stake)
+   * @example "pre-stake"
+   */
+  registrationType?: string;
+  /** Pre-stake verification status if applicable */
+  preStakeStatus?: "pending" | "verified" | "rejected";
+  /**
+   * Whether the delegation is active on Babylon
+   * @example true
+   */
+  delegationActive?: boolean;
+  /**
+   * Delegation status from Babylon
+   * @example "ACTIVE"
+   */
+  delegationStatus?: string;
+  /**
+   * Whether the delegation is available (active and status is ACTIVE)
+   * @example true
+   */
+  isAvailable?: boolean;
+}
+
+export interface GetStakingDetailsResponseDto {
+  /** List of staking details for the address */
+  stakingDetails: StakingDetailDto[];
+  /**
+   * Total amount staked across all transactions in satoshis
+   * @example 500000
+   */
+  totalStaked: number;
+  /**
+   * Total amount currently actively staked in satoshis
+   * @example 300000
+   */
+  totalActiveStaked: number;
+  /**
+   * Total number of staking transactions
+   * @example 5
+   */
+  stakingDetailsCount: number;
+  /**
+   * Number of active stakes
+   * @example 3
+   */
+  activeStakesCount: number;
+}
+
+export interface BuildPreStakeRegistrationResponseDto {
+  /**
+   * The unsigned staking transaction PSBT in hex format
+   * @example "70736274ff01007d020000000125e99b2..."
+   */
+  unsignedStakingPsbt: string;
+  /**
+   * The transaction ID of the staking transaction
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  stakingTxId: string;
+}
+
+export interface BuildPreStakeRegistrationDto {
+  /**
+   * Public key in hex format (compressed or uncompressed)
+   * @example "02a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943c2b752a68e2a47e247c7"
+   */
+  publicKey: string;
+  /**
+   * Staking address (must be valid for current network)
+   * @example "bc1..."
+   */
+  stakingAddress: string;
+  /**
+   * Amount in satoshis
+   * @example 1000000
+   */
+  amountSatoshi: number;
+  /**
+   * Time lock in blocks
+   * @example 10000
+   */
+  timeLock: number;
+  /**
+   * Fee rate in satoshis per byte
+   * @example 10
+   */
+  feeRate: number;
+  /** Specific UTXOs to use (optional) */
+  utxos?: UtxoDto[];
+  /**
+   * Whether to automatically fund the transaction
+   * @default false
+   */
+  autoFund: boolean;
+  /**
+   * Babylon address for the delegation
+   * @example "bbn1abc123..."
+   */
+  babylonAddress: string;
+}
+
+export interface BuildBabylonPreStakeTransactionResponseDto {
+  /** The unsigned Babylon registration transaction in base64 format */
+  babylonRegistrationTransaction: string;
+  /**
+   * The estimated gas required for the Babylon transaction
+   * @example 150000
+   */
+  gasEstimate: number;
+}
+
+export interface BuildBabylonPreStakeTransactionDto {
+  /**
+   * The staking transaction ID
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  stakingTxId: string;
+  /**
+   * The signed slashing transaction PSBT in hex format
+   * @example "70736274ff0100..."
+   */
+  slashingPsbtHex: string;
+  /**
+   * The signed unbonding slashing transaction PSBT in hex format
+   * @example "70736274ff0100..."
+   */
+  unbondingSlashingPsbtHex: string;
+  /**
+   * The signed Babylon address for proof of possession
+   * @example "base64SignatureString..."
+   */
+  babylonAddress: string;
+}
+
+export interface SubmitPreStakeRegistrationResponseDto {
+  /**
+   * The Babylon transaction hash
+   * @example "ABC123DEF456..."
+   */
+  txId: string;
+}
+
+export interface SubmitPreStakeRegistrationDto {
+  /**
+   * The transaction ID of the staking transaction
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  stakingTxId: string;
+  /**
+   * The Babylon transaction hash after user broadcasts it
+   * @example "ABC123DEF456..."
+   */
+  babylonTxHash: string;
+  /**
+   * The signed Babylon registration transaction in base64 format (optional, used only to verify the provided hash matches the transaction)
+   * @example "CvQFCvEFC..."
+   */
+  signedBabylonTx?: string;
+}
+
+export interface FinalizePreStakeResponseDto {
+  /**
+   * The Bitcoin transaction ID
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  txId: string;
+}
+
+export interface FinalizePreStakeDto {
+  /**
+   * The transaction ID of the staking transaction
+   * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
+   */
+  stakingTxId: string;
+  /**
+   * The signed staking transaction in hex format
+   * @example "02000000..."
+   */
+  signedStakingTx: string;
+}
+
 export interface WebsiteDataPrices {
   solPrice: number;
   ethPrice: number;
@@ -681,6 +1332,8 @@ export interface PierTwoEthereumInfo {
   pectraForkEpoch: number;
   network: string;
   chainId: number;
+  validatorMaxEBGwei: number;
+  validatorMinEBGwei: number;
 }
 
 export interface PierTwoSolanaInfo {
@@ -688,9 +1341,17 @@ export interface PierTwoSolanaInfo {
   network: string;
 }
 
+export interface PierTwoBitcoinInfo {
+  finalityProviderPK: string;
+  bitcoinNetwork: string;
+  babylonNetwork: string;
+  babylonChainId: string;
+}
+
 export interface PierTwoInfo {
   ethereum: PierTwoEthereumInfo;
   solana: PierTwoSolanaInfo;
+  bitcoin: PierTwoBitcoinInfo;
 }
 
 export interface SystemInfoResponse {
@@ -918,7 +1579,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title Pier Two Staking API
- * @version 1.0.69-mainnet
+ * @version 1.0.74-mainnet
  * @baseUrl https://gw-1.api.piertwo.io
  * @contact
  *
@@ -1836,6 +2497,399 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/ethereum/validators/incomeHistory`,
         method: "GET",
         query: query,
+        format: "json",
+        ...params,
+      }),
+  };
+  bitcoin = {
+    /**
+     * @description Get UTXOs for a given bitcoin address
+     *
+     * @tags Bitcoin
+     * @name GetAddressUtxos
+     * @summary Get UTXOs for a given bitcoin address. Only available on testnet
+     * @request GET:/bitcoin/utxos/{address}
+     */
+    getAddressUtxos: (address: string, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetAddressUtxos[];
+        },
+        any
+      >({
+        path: `/bitcoin/utxos/${address}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Build a bitcoin staking transaction for use with the post-stake flow. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name BuildStakingTransaction
+     * @summary Build a post-stake bitcoin staking transaction
+     * @request POST:/bitcoin/buildStakingTransaction
+     */
+    buildStakingTransaction: (data: BuildStakingTransactionDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: BuildStakingTransactionResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/buildStakingTransaction`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Submit a signed staking transaction for broadcasting to the Bitcoin network using the post-stake flow. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name SubmitStakingTransaction
+     * @summary Broadcast a signed bitcoin staking transaction for use with the post-stake flow
+     * @request POST:/bitcoin/submitStakingTransaction
+     */
+    submitStakingTransaction: (data: SubmitStakingTransactionDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: TransactionResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/submitStakingTransaction`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get delegation payloads for a given staking transaction ID. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name GetDelegationPayloads
+     * @summary Get delegation payloads
+     * @request POST:/bitcoin/getDelegationPayloads
+     */
+    getDelegationPayloads: (data: GetDelegationPayloadsDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetDelegationPayloadsResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/getDelegationPayloads`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Build a babylon registration transaction for an existing stake as part of the post-stake flow. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name BuildRegistrationTransaction
+     * @summary Build a post-stake babylon registration transaction
+     * @request POST:/bitcoin/buildRegistrationTransaction
+     */
+    buildRegistrationTransaction: (data: BuildRegistrationTransactionDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: BuildRegistrationTransactionResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/buildRegistrationTransaction`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get the status of a staking transaction. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name GetStakingStatus
+     * @summary Get the status of a staking transaction
+     * @request GET:/bitcoin/stakingStatus/{stakingTxId}
+     */
+    getStakingStatus: (stakingTxId: string, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetStakingStatusResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/stakingStatus/${stakingTxId}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Build an unbonding transaction PSBT. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name BuildUnbondingTransaction
+     * @summary Build an unbonding transaction PSBT that needs to be signed by the staker.
+     * @request POST:/bitcoin/buildUnbondingTransaction
+     */
+    buildUnbondingTransaction: (data: StakingTxRequestDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: BuildUnbondingTransactionResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/buildUnbondingTransaction`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Submit a staker-signed unbonding transaction PSBT. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name SubmitUnbondingTransaction
+     * @summary Submit a staker-signed unbonding transaction PSBT for processing with covenant signatures and broadcasting.
+     * @request POST:/bitcoin/submitUnbondingTransaction
+     */
+    submitUnbondingTransaction: (data: SubmitUnbondingTransactionDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: TransactionResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/submitUnbondingTransaction`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Build a withdrawal transaction PSBT for withdrawing funds from unbonded or expired stakes. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name BuildWithdrawalTransaction
+     * @summary Build a withdrawal transaction PSBT
+     * @request POST:/bitcoin/buildWithdrawalTransaction
+     */
+    buildWithdrawalTransaction: (data: BuildWithdrawalTransactionDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: BuildWithdrawalTransactionResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/buildWithdrawalTransaction`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Submit a signed withdrawal transaction for broadcasting to the Bitcoin network. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name SubmitWithdrawalTransaction
+     * @summary Submit a signed withdrawal transaction for broadcasting to the Bitcoin network
+     * @request POST:/bitcoin/submitWithdrawalTransaction
+     */
+    submitWithdrawalTransaction: (data: SubmitWithdrawalTransactionDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: TransactionResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/submitWithdrawalTransaction`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get current staking parameters including confirmation requirements. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name GetStakingParams
+     * @summary Get current babylon staking protocol parameters
+     * @request GET:/bitcoin/stakingParams
+     */
+    getStakingParams: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetStakingParamsResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/stakingParams`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get all staking details for your account. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name GetStakingDetails
+     * @summary Get all staking details for your account
+     * @request GET:/bitcoin/stakingDetails
+     */
+    getStakingDetails: (
+      query?: {
+        /** Bitcoin address */
+        address?: string;
+        pageNumber?: number;
+        pageSize?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<PaginatedApiResponseBase, "data"> & {
+          data: GetStakingDetailsResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/stakingDetails`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Build an unsigned pre-stake staking transaction PSBT that needs to be signed by the staker. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name BuildPreStakeStakingTransaction
+     * @summary Build an unsigned pre-stake staking transaction PSBT
+     * @request POST:/bitcoin/buildPreStakeStakingTransaction
+     */
+    buildPreStakeStakingTransaction: (data: BuildPreStakeRegistrationDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: BuildPreStakeRegistrationResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/buildPreStakeStakingTransaction`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get delegation payloads for pre-stake using the unsigned staking transaction. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name GetDelegationPayloadsPreStake
+     * @summary Get delegation payloads for pre-stake
+     * @request POST:/bitcoin/getDelegationPayloadsPreStake
+     */
+    getDelegationPayloadsPreStake: (data: GetDelegationPayloadsDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetDelegationPayloadsResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/getDelegationPayloadsPreStake`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Build a Babylon pre-stake transaction with signed delegation payloads. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name BuildBabylonPreStakeTransaction
+     * @summary Build a Babylon pre-stake transaction with signed delegation payloads
+     * @request POST:/bitcoin/buildBabylonPreStakeTransaction
+     */
+    buildBabylonPreStakeTransaction: (data: BuildBabylonPreStakeTransactionDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: BuildBabylonPreStakeTransactionResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/buildBabylonPreStakeTransaction`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Submit a signed pre-stake registration to Babylon for covenant verification. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name SubmitPreStakeRegistration
+     * @summary Submit a signed pre-stake registration to Babylon for covenant verification
+     * @request POST:/bitcoin/submitPreStakeRegistration
+     */
+    submitPreStakeRegistration: (data: SubmitPreStakeRegistrationDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: SubmitPreStakeRegistrationResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/submitPreStakeRegistration`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Finalize a verified pre-stake by broadcasting the Bitcoin staking transaction. Only available on testnet
+     *
+     * @tags Bitcoin
+     * @name FinalizePreStake
+     * @summary Broadcast and finalize a verified pre-stake Bitcoin staking transaction
+     * @request POST:/bitcoin/finalizePreStake
+     */
+    finalizePreStake: (data: FinalizePreStakeDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: FinalizePreStakeResponseDto;
+        },
+        any
+      >({
+        path: `/bitcoin/finalizePreStake`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
