@@ -714,7 +714,7 @@ export interface BuildStakingTransactionDto {
    * Fee rate in satoshis per byte
    * @example 10
    */
-  feeRate: number;
+  feeRate?: number;
 }
 
 export interface TransactionResponseDto {
@@ -974,7 +974,7 @@ export interface BuildWithdrawalTransactionDto {
    * Fee rate in satoshis per byte
    * @example 10
    */
-  feeRate: number;
+  feeRate?: number;
 }
 
 export interface SubmitWithdrawalTransactionDto {
@@ -1198,7 +1198,7 @@ export interface BuildPreStakeRegistrationDto {
    * Fee rate in satoshis per byte
    * @example 10
    */
-  feeRate: number;
+  feeRate?: number;
   /** Specific UTXOs to use (optional) */
   utxos?: UtxoDto[];
   /**
@@ -1579,7 +1579,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title Pier Two Staking API
- * @version 1.0.74-mainnet
+ * @version 1.0.75-mainnet
  * @baseUrl https://gw-1.api.piertwo.io
  * @contact
  *
