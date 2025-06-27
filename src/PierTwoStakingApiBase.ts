@@ -1595,7 +1595,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get Solana Stake Accounts
      * @request GET:/solana/stakes
      */
-    getSolanaStakes: (
+    getStakes: (
       query?: {
         pageNumber?: number;
         pageSize?: number;
@@ -1992,7 +1992,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get Stakes
      * @request GET:/ethereum/stakes
      */
-    getEthereumStakes: (
+    getStakes: (
       query?: {
         reference?: string;
       },
