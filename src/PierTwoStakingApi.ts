@@ -128,7 +128,7 @@ export class PierTwoStakingApi extends Api<null> {
       return new Promise(resolve => {
 
         const check = async () => {
-          const { data } = await networkModule.getStake(args.stakeId);
+          const { data } = await networkModule.getEthereumStake(args.stakeId);
 
           const allStatusesMatch = data.validators.every(v => {
             return v.status === args.desiredStatus
