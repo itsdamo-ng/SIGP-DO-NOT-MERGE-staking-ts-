@@ -87,11 +87,11 @@ export interface BuildTransactionPayloadRequestDto {
    * @example "8Htve3nXPsvXk88WrJHH6nQBQCjw4bSCJLuEpT6ArfMY"
    */
   stakePubkey?: string;
-  /** @example [{"type":"createAndDelegate","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"create","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"delegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"undelegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"withdraw","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","toPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","lamports":1000000000}},{"type":"merge","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","sourceStakePubkey":"2niBr5ra1jswrGRkxVG42GC63fTQ7TtE6uTiNeuJTu67"}}] */
+  /** @example [{"type":"createAndDelegate","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"create","input":{"fromPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","stakeAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","withdrawAuthority":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","reference":"Fund 1","label":"SOL stake 1","lamports":1000000000}},{"type":"delegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"undelegate","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8"}},{"type":"withdraw","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","toPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","lamports":1000000000}},{"type":"merge","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","sourceStakePubkey":"2niBr5ra1jswrGRkxVG42GC63fTQ7TtE6uTiNeuJTu67"}},{"type":"authorize","input":{"authorizedPubkey":"ADGZiJfmQMAYRNKGUL9phNaJaZYtFTK7xjJ2yjV3yQV8","newAuthorizedPubkey":"ehxMpdUdAS63ceRCWqTGnMVHpdkjzaEsXDq1e5usoni","stakeAuthorizationType":1}}] */
   instructions: StakeInstructionWithInputs[];
 }
 
-export interface StakingPerformanceSummary {
+export interface SolanaStakingPerformanceSummary {
   inflationRewardsTotal: string;
   inflationRewards7d: string;
   inflationRewards30d: string;
@@ -111,7 +111,7 @@ export interface SolanaStakeAccountRewards {
   solPrice: number;
 }
 
-export interface StakingRewardsChartData {
+export interface SolanaStakingRewardsChartData {
   inflationRewards: string;
   mevRewards: string;
   periodStart: number;
@@ -119,7 +119,7 @@ export interface StakingRewardsChartData {
   price: number;
 }
 
-export interface StakingNetworkInfo {
+export interface SolanaStakingNetworkInfo {
   currentEpoch: number;
   avgInflationRewardRate: number;
   slotIndex: number;
@@ -208,7 +208,7 @@ export interface CreateStakeDto {
    * an arbitrary label/memo
    * @example "Stake for 2 vallies"
    */
-  label: string;
+  label?: string;
 }
 
 export interface Validator {
@@ -276,7 +276,7 @@ export interface CreateStakePectraDto {
    * an arbitrary label/memo
    * @example "Staking 100 ETH"
    */
-  label: string;
+  label?: string;
 }
 
 export interface DataWithMessage {
@@ -485,10 +485,84 @@ export interface EthereumValidatorBatchTopupDto {
    */
   gasEstimateMultiplier: number;
   /**
-   * Array of validator topup details
+   * Array of validator deposit details
    * @example [{"validatorPubkey":"0xa20d2ba70419cb3922985488e339736ab32e6184f11708d2333f65b14f70cf47365b538c32eff237cdaf293ea2bcfb03","amountWei":"1000000000000000000"}]
    */
   deposits: EthereumValidatorTopupBaseDto[];
+}
+
+export interface EthereumValidatorDepositDto {
+  /**
+   * The address to send the transaction from, this is required for accurate gas estimation and nonce calculation
+   * @example "0x0000000000000000000000000000000000000000"
+   */
+  fromAddress: string;
+  /**
+   * multiplier to apply to gas estimate, defaults to 1.2
+   * @example 1.2
+   */
+  gasEstimateMultiplier: number;
+  /**
+   * Validator public key to top up
+   * @example "0xa20d2ba70419cb3922985488e339736ab32e6184f11708d2333f65b14f70cf47365b538c32eff237cdaf293ea2bcfb03"
+   */
+  validatorPubkey: string;
+  /**
+   * Amount of ETH to deposit in wei
+   * @example "1000000000000000000"
+   */
+  amountWei: string;
+  /**
+   * Deposit signature (signed by validator key)
+   * @example "8473169ba6...fdfb36571"
+   */
+  signature: string;
+  /**
+   * Withdrawal credentials
+   * @example "0x020000000000000000000000110af92ba116fd7868216aa794a7e4da3b9d7d11"
+   */
+  withdrawalCredentials: string;
+}
+
+export interface EthereumValidatorDepositBaseDto {
+  /**
+   * Validator public key to deposit into
+   * @example "0xa20d2ba70419cb3922985488e339736ab32e6184f11708d2333f65b14f70cf47365b538c32eff237cdaf293ea2bcfb03"
+   */
+  validatorPubkey: string;
+  /**
+   * Amount of ETH to deposit in wei
+   * @example "1000000000000000000"
+   */
+  amountWei: string;
+  /**
+   * Deposit signature (signed by validator key)
+   * @example "8473169ba6...fdfb36571"
+   */
+  signature: string;
+  /**
+   * Withdrawal credentials
+   * @example "0x020000000000000000000000110af92ba116fd7868216aa794a7e4da3b9d7d11"
+   */
+  withdrawalCredentials: string;
+}
+
+export interface EthereumValidatorBatchDepositDto {
+  /**
+   * The address to send the transaction from, this is required for accurate gas estimation and nonce calculation
+   * @example "0x0000000000000000000000000000000000000000"
+   */
+  fromAddress: string;
+  /**
+   * multiplier to apply to gas estimate, defaults to 1.2
+   * @example 1.2
+   */
+  gasEstimateMultiplier: number;
+  /**
+   * Array of validator deposit details
+   * @example [{"validatorPubkey":"0xa20d2ba70419cb3922985488e339736ab32e6184f11708d2333f65b14f70cf47365b538c32eff237cdaf293ea2bcfb03","amountWei":"1000000000000000000","signature":"8473169ba6...fdfb36571","withdrawalCredentials":"0x020000000000000000000000110af92ba116fd7868216aa794a7e4da3b9d7d11"}]
+   */
+  deposits: EthereumValidatorDepositBaseDto[];
 }
 
 export interface EthereumValidatorWithdrawDto {
@@ -560,9 +634,8 @@ export interface ValidatorInfo {
   depositTime: number;
 }
 
-export interface ValidatorStat {
+export interface ValidatorDailyRewardDto {
   index: number;
-  day: number;
   dayStart: number;
   consensusRewards: string;
   executionRewards: string;
@@ -1293,6 +1366,60 @@ export interface FinalizePreStakeDto {
   signedStakingTx: string;
 }
 
+export interface CardanoStakeAccount {
+  stakeAccountAddress: string;
+  poolId: string;
+  lovelace: string;
+  status: string;
+  reference: string;
+  label: string;
+  activationEpoch: number;
+  lastSyncEpoch: number;
+  totalWithdrawals: string;
+  withdrawableAmount: string;
+  drepId: string;
+  performanceTotal: string;
+  performance30d: string;
+  performance7d: string;
+}
+
+export interface CardanoStakingPerformanceSummary {
+  stakingRewardsTotal: string;
+  stakingRewards7d: string;
+  stakingRewards30d: string;
+}
+
+export interface CardanoStakeAccountRewards {
+  stakeAccountAddress: string;
+  epoch: number;
+  type: string;
+  dayStart: number;
+  epochStart: number;
+  dayEnd: number;
+  epochEnd: number;
+  consensusRewardAmount: string;
+  poolId: string;
+  adaPrice: number;
+}
+
+export interface AddStakeAccountDto {
+  /**
+   * The stake account address to add to the system
+   * @example "stake1u9klnfr0v4f2k3v2c0t4d0h3l2p8x9q6r7s8t9u0v1w2x3y4z5a6b7c8d9e0f"
+   */
+  stakeAccountAddress: string;
+  /**
+   * Arbitrary reference/grouping, this will show in the UI as the account
+   * @example "Test Fund"
+   */
+  reference: string;
+  /**
+   * Secondary label for this particular stake position
+   * @example "Balance Sheet Stake"
+   */
+  label?: string;
+}
+
 export interface WebsiteDataPrices {
   solPrice: number;
   ethPrice: number;
@@ -1348,10 +1475,15 @@ export interface PierTwoBitcoinInfo {
   babylonChainId: string;
 }
 
+export interface PierTwoCardanoInfo {
+  network: string;
+}
+
 export interface PierTwoInfo {
   ethereum: PierTwoEthereumInfo;
   solana: PierTwoSolanaInfo;
   bitcoin: PierTwoBitcoinInfo;
+  cardano: PierTwoCardanoInfo;
 }
 
 export interface SystemInfoResponse {
@@ -1579,7 +1711,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title Pier Two Staking API
- * @version 1.0.75-mainnet
+ * @version 1.0.91-mainnet
  * @baseUrl https://gw-1.api.piertwo.io
  * @contact
  *
@@ -1595,7 +1727,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get Solana Stake Accounts
      * @request GET:/solana/stakes
      */
-    getStakes: (
+    getSolanaStakes: (
       query?: {
         pageNumber?: number;
         pageSize?: number;
@@ -1616,7 +1748,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Generate a stake transaction payload containing one or more instructions. Possible instruction types and inputs are described below: This returns a serialized transaction which can be deserialized, signed and submitted to the network. See [@solana/web.js](https://solana-labs.github.io/solana-web3.js/index.html) docs for deserializing [Versioned Messages](https://solana-labs.github.io/solana-web3.js/variables/VersionedMessage-1.html) and working with [Versioned Transactions](https://solana-labs.github.io/solana-web3.js/classes/VersionedTransaction.html) ***N.B any instructions operating on an existing stake account must specify target stakePubkey in the request body seperate to the instructions*** ***Create and delegate new stake account*** ~~~ { type: 'createAndDelegate' input: { fromPubkey: pubkey of funding address, stakeAuthority: address authorized to delegate and undelegate stake, withdrawAuthority: address authorized to withdraw stake, lamports: amount of lamports to stake (1 sol = 1000000000 lamports), reference: an arbitrary reference used to identify/group the stake within the Pier Two platform, label: an arbitrary label/memo for use within the Pier Two platform } } ~~~ ***Create a new stake account (same input data as 'createAndDelegate')*** ~~~ { type: 'create' input: { fromPubkey: pubkey of funding address, stakeAuthority: address authorized to delegate and undelegate stake, withdrawAuthority: address authorized to withdraw stake, lamports: amount of lamports to stake (1 sol = 1000000000 lamports), reference: an arbitrary reference used to identify/group the stake within the Pier Two platform, label: an arbitrary label/memo for use within the Pier Two platform } } ~~~ ***Delegate an existing stake account*** ~~~ { type: 'delegate' input: { authorizedPubkey: address authorized to delegate and undelegate stake } } ~~~ ***Undelegate (deactivate) an existing stake account*** ~~~ { type: 'undelegate' input: { authorizedPubkey: address authorized to delegate and undelegate stake } } ~~~ ***Withdraw inactive stake (deactivated stake balance or any other excess SOL held by account)*** ~~~ { type: 'withdraw' input: { toPubkey: recipient of withdrawn funds, authorizedPubkey: address authorized to withdraw stake, lamports: amount of lamports to withdraw (1 sol = 1000000000 lamports), } } ~~~ ***Merge an eligible stake account into target stake account*** An eligible stake account must have the same stakeAuthority and withdrawAuthority and have been active for an entire epoch and earned rewards ~~~ { type: 'merge' input: { sourceStakePubkey: address of stake account to merge (this account will be dissolved/closed onchain), authorizedPubkey: address authorized to delegate and undelegate } } ~~~
+     * @description Generate a stake transaction payload containing one or more instructions. Possible instruction types and inputs are described below: This returns a serialized transaction which can be deserialized, signed and submitted to the network. See [@solana/web.js](https://solana-labs.github.io/solana-web3.js/index.html) docs for deserializing [Versioned Messages](https://solana-labs.github.io/solana-web3.js/variables/VersionedMessage-1.html) and working with [Versioned Transactions](https://solana-labs.github.io/solana-web3.js/classes/VersionedTransaction.html) ***N.B any instructions operating on an existing stake account must specify target stakePubkey in the request body seperate to the instructions*** ***Create and delegate new stake account*** ~~~ { type: 'createAndDelegate' input: { fromPubkey: pubkey of funding address, stakeAuthority: address authorized to delegate and undelegate stake, withdrawAuthority: address authorized to withdraw stake, lamports: amount of lamports to stake (1 sol = 1000000000 lamports), reference: an arbitrary reference used to identify/group the stake within the Pier Two platform, label: an arbitrary label/memo for use within the Pier Two platform } } ~~~ ***Create a new stake account (same input data as 'createAndDelegate')*** ~~~ { type: 'create' input: { fromPubkey: pubkey of funding address, stakeAuthority: address authorized to delegate and undelegate stake, withdrawAuthority: address authorized to withdraw stake, lamports: amount of lamports to stake (1 sol = 1000000000 lamports), reference: an arbitrary reference used to identify/group the stake within the Pier Two platform, label: an arbitrary label/memo for use within the Pier Two platform } } ~~~ ***Delegate an existing stake account*** ~~~ { type: 'delegate' input: { authorizedPubkey: address authorized to delegate and undelegate stake } } ~~~ ***Undelegate (deactivate) an existing stake account*** ~~~ { type: 'undelegate' input: { authorizedPubkey: address authorized to delegate and undelegate stake } } ~~~ ***Withdraw inactive stake (deactivated stake balance or any other excess SOL held by account)*** ~~~ { type: 'withdraw' input: { toPubkey: recipient of withdrawn funds, authorizedPubkey: address authorized to withdraw stake, lamports: amount of lamports to withdraw (1 sol = 1000000000 lamports), } } ~~~ ***Merge an eligible stake account into target stake account*** An eligible stake account must have the same stakeAuthority and withdrawAuthority and have been active for an entire epoch and earned rewards ~~~ { type: 'merge' input: { sourceStakePubkey: address of stake account to merge (this account will be dissolved/closed onchain), authorizedPubkey: address authorized to delegate and undelegate } } ~~~ ***Change withdraw or stake authority address of an existing stake account*** This must be signed by the existing authority address of the stake account ~~~ { type: 'authorize' input: { authorizedPubkey: the current authority address of the stake account, newAuthorizedPubkey: the new authority address of the stake account, stakeAuthorizationType: the authority type to change (0 for stake authority, 1 for withdraw authority), } } ~~~
      *
      * @tags Solana
      * @name BuildTransactionPayload
@@ -1655,7 +1787,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: StakingPerformanceSummary;
+          data: SolanaStakingPerformanceSummary;
         },
         any
       >({
@@ -1678,7 +1810,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query: {
         /** comma seperated list of stake account pubkeys */
         stakePubkey: string;
-        /** fiat currency for ethereum pricing */
+        /** fiat currency for solana pricing */
         currency?: string;
         /** unix timestamp of starting date from */
         dateFrom?: number;
@@ -1725,7 +1857,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: StakingRewardsChartData[];
+          data: SolanaStakingRewardsChartData[];
         },
         any
       >({
@@ -1747,7 +1879,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     getNetworkStakingInfo: (params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: StakingNetworkInfo;
+          data: SolanaStakingNetworkInfo;
         },
         any
       >({
@@ -1992,7 +2124,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get Stakes
      * @request GET:/ethereum/stakes
      */
-    getStakes: (
+    getEthereumStakes: (
       query?: {
         reference?: string;
       },
@@ -2233,6 +2365,52 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Generate transaction data for depositing ETH to a single validator that is not yet active. This endpoint will generate a transaction for interacting with the [canonical beacon deposit contract](https://etherscan.io/address/0x00000000219ab540356cBB839Cbe05303d7705Fa). The returned transaction data must be signed and broadcast by the user.
+     *
+     * @tags Ethereum
+     * @name CraftEthValidatorDepositTx
+     * @summary Generate initial validator deposit transaction
+     * @request POST:/ethereum/txcrafting/validators/deposit
+     */
+    craftEthValidatorDepositTx: (data: EthereumValidatorDepositDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: EthereumTransactionCraftingResponse;
+        },
+        any
+      >({
+        path: `/ethereum/txcrafting/validators/deposit`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Generate transaction data for depositing ETH to multiple validators that are not yet active. This endpoint will generate a transaction for interacting with our [pectra batch deposit implementation](https://docs.piertwo.com/docs/batch-deposit-contract). The returned transaction data must be signed and broadcast by the user.
+     *
+     * @tags Ethereum
+     * @name CraftEthValidatorBatchDepositTx
+     * @summary Generate batch initialvalidator deposit transaction
+     * @request POST:/ethereum/txcrafting/validators/batchdeposit
+     */
+    craftEthValidatorBatchDepositTx: (data: EthereumValidatorBatchDepositDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: EthereumTransactionCraftingResponse;
+        },
+        any
+      >({
+        path: `/ethereum/txcrafting/validators/batchdeposit`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Generate transaction data for performing an [EIP 7002 on-chain validator withdrawal](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-7002.md#abstract). This can be used to withdraw accrued rewards exceeding 32 ETH. The withdrawal amount will be capped such that the validator balance does not fall below 32 ETH. This can be used to perform a full exit by specifying an amount of 0. The returned transaction data must be signed and broadcast by the user.
      *
      * @tags Ethereum
@@ -2345,12 +2523,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         dateFrom?: number;
         /** unix timestamp of ending date to */
         dateTo?: number;
+        /** whether or not to wait for data sync */
+        waitForDataSync?: string;
+        /** data source version, v1 = daily balance snapshot, v2 = income details */
+        version?: string;
       },
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: ValidatorStat[];
+          data: ValidatorDailyRewardDto[];
         },
         any
       >({
@@ -2411,6 +2593,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         datapoints?: number;
         /** currency used for price data */
         currency?: string;
+        /** data source version, v1 = daily balance snapshot, v2 = income details */
+        version?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -2894,6 +3078,120 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
   };
+  cardano = {
+    /**
+     * @description Returns the details of Cardano staking positions for your account.
+     *
+     * @tags Cardano
+     * @name GetCardanoStakes
+     * @summary Get Cardano Stake Accounts
+     * @request GET:/cardano/stakes
+     */
+    getCardanoStakes: (
+      query?: {
+        pageNumber?: number;
+        pageSize?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<PaginatedApiResponseBase, "data"> & {
+          data: CardanoStakeAccount[];
+        },
+        any
+      >({
+        path: `/cardano/stakes`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns the 7D, 30D and total staking and MEV rewards for the specified stake accounts.
+     *
+     * @tags Cardano
+     * @name GetPerformanceSummary
+     * @summary Get Cardano stake performance summary
+     * @request GET:/cardano/stake/performanceSummary
+     */
+    getPerformanceSummary: (
+      query?: {
+        /** comma seperated list of stake account addresses, will return data for all active stake accounts if none are provided */
+        stakeAccountAddress?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CardanoStakingPerformanceSummary;
+        },
+        any
+      >({
+        path: `/cardano/stake/performanceSummary`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns daily rewards stats of specified stake accounts.
+     *
+     * @tags Cardano
+     * @name GetStakeAccountDailyRewards
+     * @summary Get daily rewards stats
+     * @request GET:/cardano/stake/dailyRewards
+     */
+    getStakeAccountDailyRewards: (
+      query: {
+        /** comma seperated list of stake account addresses */
+        stakeAccountAddress: string;
+        /** fiat currency for ada pricing */
+        currency?: string;
+        /** unix timestamp of starting date from */
+        dateFrom?: number;
+        /** unix timestamp of ending date to */
+        dateTo?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CardanoStakeAccountRewards[];
+        },
+        any
+      >({
+        path: `/cardano/stake/dailyRewards`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Add a known Cardano stake account to your account
+     *
+     * @tags Cardano
+     * @name AddStakeAccount
+     * @summary Add Cardano Stake Account
+     * @request POST:/cardano/stake/account
+     */
+    addStakeAccount: (data: AddStakeAccountDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CardanoStakeAccount;
+        },
+        any
+      >({
+        path: `/cardano/stake/account`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
   public = {
     /**
      * @description get data for rendering network statistics (asset prices, assets UAM, etc)
@@ -2960,6 +3258,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         any
       >({
         path: `/public/systemInfo`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get supported currency symbols for reporting (chart data and rewards data exports)
+     *
+     * @tags Public
+     * @name SupportedCurrencies
+     * @summary Get Supported Currencies
+     * @request GET:/public/supportedCurrencies
+     */
+    supportedCurrencies: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: string[];
+        },
+        any
+      >({
+        path: `/public/supportedCurrencies`,
         method: "GET",
         format: "json",
         ...params,
