@@ -1600,69 +1600,69 @@ export interface ListWalletsResponse {
 export interface ProtocolStatsResponse {
   /**
    * 7-day average staking reward rate
-   * @example 3.5
+   * @example "3.5"
    */
-  aSrr7d: number;
+  aSrr7d: string;
   /**
-   * ETH to lsETH conversion rate
-   * @example 1.0423
+   * ETH to LsETH conversion rate
+   * @example "1.0423421489732119402"
    */
-  conversionRate: number;
+  conversionRate: string;
   /**
    * Date of the protocol statistics
-   * @example "2024-01-15"
+   * @example "2025-08-08T00:58:48Z"
    */
   date: string;
   /**
-   * Gross fee in lsETH
-   * @example 1234.56
+   * Gross fee in LsETH
+   * @example "1234.56"
    */
-  grossFeeLseth: number;
+  grossFeeLsEth: string;
   /**
    * Gross fee rate
-   * @example 0.1
+   * @example "0.1"
    */
-  grossFeeRate: number;
+  grossFeeRate: string;
   /**
    * Oracle report reference
-   * @example "report-123"
+   * @example "19fedfa926a41b9d2e98f4f5bb30cd275de6be4cd6d9a45f20232bef61b6fa4600000088"
    */
   oracleReport: string;
   /**
    * Protocol service fee rate
-   * @example 0.05
+   * @example "0.1"
    */
-  protocolServiceFeeRate: number;
+  protocolServiceFeeRate: string;
   /**
    * Total rewards in ETH
-   * @example 12345.67
+   * @example "12345.67"
    */
-  rewardsEth: number;
+  rewardsEth: string;
   /**
    * Total ETH staked in the protocol
-   * @example 1000000
+   * @example "1000000.4234949295"
    */
-  totalEthStaked: number;
+  totalEthStaked: string;
   /**
-   * Total lsETH token supply
-   * @example 950000
+   * Total LsETH token supply
+   * @example "950000.999586858321"
    */
-  totalLsethSupply: number;
+  totalLsEthSupply: string;
   /**
    * Total number of active protocol validator keys
    * @example 25000
    */
   totalProtocolActiveKeysCount: number;
   /**
-   * Total lsETH burned by the protocol
-   * @example 5000
+   * Total LsETH burned by the protocol
+   * @example "50542.59394311209"
    */
-  totalProtocolBurnsLseth: number;
+  totalProtocolBurnsLsEth: string;
   /**
-   * Total lsETH minted by the protocol
-   * @example 100000
+   * Total LsETH minted by the protocol
+   * @example "103509.4500201346984"
    */
-  totalProtocolMintsLseth: number;
+  totalProtocolMintsLsEth: string;
 }
 
 export interface LsEthDepositDto {
@@ -1704,6 +1704,24 @@ export interface LsEthRedeemDto {
    * @example "0x1234567890123456789012345678901234567890"
    */
   recipient: string;
+}
+
+export interface WalletBalanceResponse {
+  /**
+   * Wallet address
+   * @example "0xc8cd785c6ba55d71a6530c08d1df7ecbf090299c"
+   */
+  address: string;
+  /**
+   * LsETH balance
+   * @example "295022399276590070922"
+   */
+  lsEthBalance: string;
+  /**
+   * Block number
+   * @example 962779
+   */
+  blockNumber: number;
 }
 
 export interface RedeemRequestDto {
@@ -2014,12 +2032,12 @@ export interface RedeemManagerInfoResponse {
    * The cumulative sum of the redeem request heights
    * @example 1000
    */
-  totalAmountRedeemQueueLseth?: number;
+  totalAmountRedeemQueueLsEth: number;
   /**
    * The cumulative sum of the withdrawal event heights
    * @example 500
    */
-  totalAmountWithdrawalStackLseth?: number;
+  totalAmountWithdrawalStackLsEth: number;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -3854,11 +3872,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Generate a message with nonce that must be signed to prove wallet ownership
      *
      * @tags LsEth
-     * @name AddWalletChallenge
+     * @name AddLsEthWalletChallenge
      * @summary Generate wallet ownership challenge
      * @request POST:/lsEth/wallet/add/challenge
      */
-    addWalletChallenge: (data: WalletChallengeRequest, params: RequestParams = {}) =>
+    addLsEthWalletChallenge: (data: WalletChallengeRequest, params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
           data: WalletChallengeResponse;
@@ -3877,11 +3895,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Verify signed challenge and add wallet to Alluvial platform
      *
      * @tags LsEth
-     * @name AddWalletVerify
+     * @name AddLsEthWalletVerify
      * @summary Verify wallet ownership and add wallet
      * @request POST:/lsEth/wallet/add/verify
      */
-    addWalletVerify: (data: WalletVerifyRequest, params: RequestParams = {}) =>
+    addLsEthWalletVerify: (data: WalletVerifyRequest, params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
           data: WalletVerifyResponse;
@@ -3900,11 +3918,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description List all wallets associated with the user account with pagination support
      *
      * @tags LsEth
-     * @name ListWallets
+     * @name ListLsEthWallets
      * @summary List user wallets
      * @request GET:/lsEth/wallets
      */
-    listWallets: (
+    listLsEthWallets: (
       query?: {
         /**
          * Enable to only return allowlisted wallets
@@ -3949,11 +3967,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Get high-level current lsETH protocol statistics including conversion rate, staking rewards, and supply metrics
      *
      * @tags LsEth
-     * @name GetProtocolStats
+     * @name GetLsEthProtocolStats
      * @summary Get lsETH protocol statistics
      * @request GET:/lsEth/protocolStats
      */
-    getProtocolStats: (
+    getLsEthProtocolStats: (
       query?: {
         /** Display lsETH values in units of wei. Defaults to ETH/lsETH with decimal representation if not specified. */
         unit?: "wei";
@@ -4023,21 +4041,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Get the lsETH and ETH balance for a wallet address linked to your account
      *
      * @tags LsEth
-     * @name GetWalletBalance
+     * @name GetLsEthWalletBalance
      * @summary Get wallet lsETH and ETH balance
      * @request GET:/lsEth/balance
      */
-    getWalletBalance: (
+    getLsEthWalletBalance: (
       query: {
         /** Wallet address to check balance for (must be linked to your account) */
         address: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<void, any>({
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: WalletBalanceResponse;
+        },
+        any
+      >({
         path: `/lsEth/balance`,
         method: "GET",
         query: query,
+        format: "json",
         ...params,
       }),
 
@@ -4045,11 +4069,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description List all redemption requests for your wallets or a specific wallet
      *
      * @tags LsEth
-     * @name ListRedeems
+     * @name ListLsEthRedeems
      * @summary List redemption requests
      * @request GET:/lsEth/redeems
      */
-    listRedeems: (
+    listLsEthRedeems: (
       query?: {
         /** Optional wallet address to filter redemptions (must be linked to your account) */
         walletAddress?: string;
@@ -4073,11 +4097,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Get details of a specific redemption request
      *
      * @tags LsEth
-     * @name GetRedeemDetails
+     * @name GetLsEthRedeemDetails
      * @summary Get redemption request details
      * @request GET:/lsEth/redeems/{id}
      */
-    getRedeemDetails: (id: number, params: RequestParams = {}) =>
+    getLsEthRedeemDetails: (id: number, params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
           data: RedeemDetailsResponse;
@@ -4094,11 +4118,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Get estimated timing for when a redemption request will be satisfied
      *
      * @tags LsEth
-     * @name GetRedeemProjection
+     * @name GetLsEthRedeemProjection
      * @summary Get redemption timing projection
      * @request GET:/lsEth/redeems/{id}/projection
      */
-    getRedeemProjection: (id: number, params: RequestParams = {}) =>
+    getLsEthRedeemProjection: (id: number, params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
           data: RedeemProjectionResponse;
@@ -4115,11 +4139,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Generate transaction data for claiming ETH from satisfied redemption requests
      *
      * @tags LsEth
-     * @name CraftClaimRedeemTx
+     * @name CraftLsEthClaimRedeemTx
      * @summary Generate claim redemption transaction
      * @request POST:/lsEth/txcrafting/claim
      */
-    craftClaimRedeemTx: (data: ClaimRedeemDto, params: RequestParams = {}) =>
+    craftLsEthClaimRedeemTx: (data: ClaimRedeemDto, params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
           data: EthereumTransactionCraftingResponse;
@@ -4138,11 +4162,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Get transaction history for a specific wallet address linked to your account
      *
      * @tags LsEth
-     * @name GetWalletTransactionHistory
+     * @name GetLsEthWalletTransactionHistory
      * @summary Get wallet transaction history
      * @request GET:/lsEth/transactions
      */
-    getWalletTransactionHistory: (
+    getLsEthWalletTransactionHistory: (
       query: {
         address: string;
         /**
@@ -4186,11 +4210,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Get combined transaction and redemption history from all allowlisted wallets, sorted by date
      *
      * @tags LsEth
-     * @name GetAggregateActivity
+     * @name GetLsEthAggregateActivity
      * @summary Get aggregate activity across all wallets
      * @request GET:/lsEth/activity
      */
-    getAggregateActivity: (
+    getLsEthAggregateActivity: (
       query?: {
         /** Maximum number of activities to return (optional) */
         limit?: number;
@@ -4214,11 +4238,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Get information about the redeem manager including queue and withdrawal stack amounts
      *
      * @tags LsEth
-     * @name GetRedeemManagerInfo
+     * @name GetLsEthRedeemManagerInfo
      * @summary Get redeem manager information
      * @request GET:/lsEth/redeemManagerInfo
      */
-    getRedeemManagerInfo: (params: RequestParams = {}) =>
+    getLsEthRedeemManagerInfo: (params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
           data: RedeemManagerInfoResponse;
