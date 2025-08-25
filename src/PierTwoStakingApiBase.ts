@@ -1420,6 +1420,124 @@ export interface AddStakeAccountDto {
   label?: string;
 }
 
+export interface CardanoTransactionCraftingResponse {
+  /**
+   * The unsigned transaction in CBOR format
+   * @example "84a50081825820..."
+   */
+  unsignedTx: string;
+  /**
+   * The transaction fee in lovelace
+   * @example "170000"
+   */
+  fee: string;
+  /**
+   * UTXOs being spent as part of the transaction
+   * @example [{"txHash":"0x1234567890abcdef...","outputIndex":0,"lovelacee":"1000000","address":"addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"}]
+   */
+  utxosIn: string[];
+  /**
+   * UTXOs being created as change outputs
+   * @example [{"txHash":"0x1234567890abcdef...","outputIndex":0,"lovelace":"1000000","address":"addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"}]
+   */
+  utxosOut: string[];
+}
+
+export interface CardanoRegisterStakeAddressDto {
+  /**
+   * The stake address to use for staking operations
+   * @example "stake1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  stakeAddress: string;
+  /**
+   * The address to use for UTXO selection
+   * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  utxoAddress: string;
+  /**
+   * The address to spend utxos to. If not provided, the change will be returned to the utxoAddress
+   * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  changeAddress?: string;
+}
+
+export interface CardanoDeregisterStakeAddressDto {
+  /**
+   * The stake address to use for staking operations
+   * @example "stake1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  stakeAddress: string;
+  /**
+   * The address to use for UTXO selection
+   * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  utxoAddress: string;
+  /**
+   * The address to spend utxos to. If not provided, the change will be returned to the utxoAddress
+   * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  changeAddress?: string;
+}
+
+export interface CardanoDelegateStakeDto {
+  /**
+   * The stake address to use for staking operations
+   * @example "stake1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  stakeAddress: string;
+  /**
+   * The address to use for UTXO selection
+   * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  utxoAddress: string;
+  /**
+   * The address to spend utxos to. If not provided, the change will be returned to the utxoAddress
+   * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  changeAddress?: string;
+}
+
+export interface CardanoRegisterAndDelegateDto {
+  /**
+   * The stake address to use for staking operations
+   * @example "stake1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  stakeAddress: string;
+  /**
+   * The address to use for UTXO selection
+   * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  utxoAddress: string;
+  /**
+   * The address to spend utxos to. If not provided, the change will be returned to the utxoAddress
+   * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  changeAddress?: string;
+}
+
+export interface CardanoStakingRewardsWithdrawalDto {
+  /**
+   * The stake address to use for staking operations
+   * @example "stake1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  stakeAddress: string;
+  /**
+   * The address to use for UTXO selection
+   * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  utxoAddress: string;
+  /**
+   * The address to spend utxos to. If not provided, the change will be returned to the utxoAddress
+   * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  changeAddress?: string;
+  /**
+   * The amount of lovelace to withdraw
+   * @example "1000000"
+   */
+  amountLovelace: string;
+}
+
 export interface WebsiteDataPrices {
   solPrice: number;
   ethPrice: number;
@@ -2252,7 +2370,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title Pier Two Staking API
- * @version 1.0.95-mainnet
+ * @version 1.0.97-mainnet
  * @baseUrl https://gw-1.api.piertwo.io
  * @contact
  *
@@ -3726,6 +3844,121 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         any
       >({
         path: `/cardano/stake/account`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Craft a transaction for registering a Cardano stake address
+     *
+     * @tags Cardano
+     * @name CraftCardanoRegisterStakeAddressTx
+     * @summary Craft Cardano Stake Address Registration Transaction
+     * @request POST:/cardano/txcrafting/registerStakeAddress
+     */
+    craftCardanoRegisterStakeAddressTx: (data: CardanoRegisterStakeAddressDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CardanoTransactionCraftingResponse;
+        },
+        any
+      >({
+        path: `/cardano/txcrafting/registerStakeAddress`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Craft a transaction for deregistering a Cardano stake address
+     *
+     * @tags Cardano
+     * @name CraftCardanoDeregisterStakeAddressTx
+     * @summary Craft Cardano Stake Address Deregistration Transaction
+     * @request POST:/cardano/txcrafting/deregisterStakeAddress
+     */
+    craftCardanoDeregisterStakeAddressTx: (data: CardanoDeregisterStakeAddressDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CardanoTransactionCraftingResponse;
+        },
+        any
+      >({
+        path: `/cardano/txcrafting/deregisterStakeAddress`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Craft a transaction for delegating stake to a Cardano stake pool
+     *
+     * @tags Cardano
+     * @name CraftCardanoDelegateStakeTx
+     * @summary Craft Cardano Stake Delegation Transaction
+     * @request POST:/cardano/txcrafting/delegateStake
+     */
+    craftCardanoDelegateStakeTx: (data: CardanoDelegateStakeDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CardanoTransactionCraftingResponse;
+        },
+        any
+      >({
+        path: `/cardano/txcrafting/delegateStake`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Craft a transaction for registering a stake address and delegating to a stake pool in a single transaction
+     *
+     * @tags Cardano
+     * @name CraftCardanoRegisterAndDelegateTx
+     * @summary Craft Cardano Register and Delegate Transaction
+     * @request POST:/cardano/txcrafting/registerAndDelegate
+     */
+    craftCardanoRegisterAndDelegateTx: (data: CardanoRegisterAndDelegateDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CardanoTransactionCraftingResponse;
+        },
+        any
+      >({
+        path: `/cardano/txcrafting/registerAndDelegate`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Craft a transaction for withdrawing stake rewards
+     *
+     * @tags Cardano
+     * @name CraftCardanoStakingRewardsWithdrawalTx
+     * @summary Craft Cardano Stake Rewards Withdrawal Transaction
+     * @request POST:/cardano/txcrafting/stakingRewardsWithdrawal
+     */
+    craftCardanoStakingRewardsWithdrawalTx: (data: CardanoStakingRewardsWithdrawalDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CardanoTransactionCraftingResponse;
+        },
+        any
+      >({
+        path: `/cardano/txcrafting/stakingRewardsWithdrawal`,
         method: "POST",
         body: data,
         type: ContentType.Json,
