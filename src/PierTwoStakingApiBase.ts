@@ -716,21 +716,21 @@ export interface ValidatorIncomeHistory {
   totalIncomeWei: string;
 }
 
-export interface UtxoStatus {
+export interface BitcoinUtxoStatus {
   confirmed: boolean;
   block_height: number;
   block_hash: string;
   block_time: number;
 }
 
-export interface GetAddressUtxos {
+export interface GetBitcoinAddressUtxos {
   txid: string;
   vout: number;
-  status: UtxoStatus;
+  status: BitcoinUtxoStatus;
   value: number;
 }
 
-export interface BuildStakingTransactionResponseDto {
+export interface BuildBabylonStakingTransactionResponseDto {
   /**
    * The unsigned staking transaction PSBT in hex format
    * @example "70736274ff01007d020000000125e99b2..."
@@ -743,7 +743,7 @@ export interface BuildStakingTransactionResponseDto {
   stakingTxId: string;
 }
 
-export interface UtxoDto {
+export interface BitcoinUtxoDto {
   /**
    * Transaction ID
    * @example "f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16"
@@ -756,7 +756,7 @@ export interface UtxoDto {
   vout: number;
 }
 
-export interface BuildStakingTransactionDto {
+export interface BuildBabylonStakingTransactionDto {
   /**
    * Public key in hex format (compressed or uncompressed)
    * @example "02a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943c2b752a68e2a47e247c7"
@@ -778,7 +778,7 @@ export interface BuildStakingTransactionDto {
    */
   timeLock: number;
   /** Array of UTXOs to use for the transaction */
-  utxos?: UtxoDto[];
+  utxos?: BitcoinUtxoDto[];
   /**
    * Whether to automatically fund the transaction
    * @default false
@@ -791,7 +791,7 @@ export interface BuildStakingTransactionDto {
   feeRate?: number;
 }
 
-export interface TransactionResponseDto {
+export interface BitcoinTransactionResponseDto {
   /**
    * The transaction ID
    * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
@@ -799,7 +799,7 @@ export interface TransactionResponseDto {
   txId: string;
 }
 
-export interface SubmitStakingTransactionDto {
+export interface SubmitBabylonStakingTransactionDto {
   /**
    * The transaction ID of the staking transaction
    * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
@@ -812,7 +812,7 @@ export interface SubmitStakingTransactionDto {
   signedStakingTx: string;
 }
 
-export interface GetDelegationPayloadsResponseDto {
+export interface GetBabylonDelegationPayloadsResponseDto {
   /** The slashing transaction PSBT in hex format that needs to be signed */
   slashingPsbtHex: string;
   /** The unbonding slashing transaction PSBT in hex format that needs to be signed */
@@ -821,7 +821,7 @@ export interface GetDelegationPayloadsResponseDto {
   babylonAddress: string;
 }
 
-export interface GetDelegationPayloadsDto {
+export interface GetBabylonDelegationPayloadsDto {
   /**
    * The transaction ID of the staking transaction
    * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
@@ -839,14 +839,14 @@ export interface GetDelegationPayloadsDto {
   signedStakingTxHex?: string;
 }
 
-export interface BuildRegistrationTransactionResponseDto {
+export interface BuildBabylonRegistrationTransactionResponseDto {
   /** The unsigned Babylon transaction in base64 format ready to be signed and broadcast */
   transaction: string;
   /** The estimated gas required for the transaction on the Babylon chain */
   gasEstimate: number;
 }
 
-export interface SignedPayloadsDto {
+export interface BabylonSignedPayloadsDto {
   /**
    * Slashing PSBT hex string
    * @example "70736274..."
@@ -864,24 +864,24 @@ export interface SignedPayloadsDto {
   babylonAddress: string;
 }
 
-export interface BuildRegistrationTransactionDto {
+export interface BuildBabylonRegistrationTransactionDto {
   /**
    * Staking transaction ID
    * @example "txid123..."
    */
   stakingTxId: string;
   /** Signed payloads containing PSBT hex strings and Babylon address */
-  signedPayloads: SignedPayloadsDto;
+  signedPayloads: BabylonSignedPayloadsDto;
 }
 
-export interface StakingTransactionDto {
+export interface BabylonStakingTransactionDto {
   txid: string;
   confirmed: boolean;
   broadcasted: boolean;
   depth: number;
 }
 
-export interface CovenantSignatureDto {
+export interface BabylonCovenantSignatureDto {
   /** The covenant public key */
   cov_pk: string;
   /** Array of adaptor signatures */
@@ -895,7 +895,7 @@ export interface CovenantUnbondingSignatureDto {
   sig: string;
 }
 
-export interface UndelegationResponseDto {
+export interface BabylonUndelegationResponseDto {
   /** The hex-encoded unbonding transaction */
   unbonding_tx_hex: string;
   /** List of covenant unbonding signatures */
@@ -905,7 +905,7 @@ export interface UndelegationResponseDto {
   /** The delegator's slashing signature in hex */
   delegator_slashing_sig_hex: string;
   /** List of covenant slashing signatures */
-  covenant_slashing_sigs: CovenantSignatureDto[];
+  covenant_slashing_sigs: BabylonCovenantSignatureDto[];
   /** Delegator unbonding info response */
   delegator_unbonding_info_response?: object | null;
 }
@@ -932,7 +932,7 @@ export interface BtcDelegationDto {
   /** The delegator's slash signature in hex */
   delegator_slash_sig_hex: string;
   /** List of covenant signatures */
-  covenant_sigs: CovenantSignatureDto[];
+  covenant_sigs: BabylonCovenantSignatureDto[];
   /** The staking output index */
   staking_output_idx: number;
   /** Whether the delegation is active */
@@ -942,29 +942,29 @@ export interface BtcDelegationDto {
   /** The unbonding time in blocks */
   unbonding_time: number;
   /** The undelegation response */
-  undelegation_response?: UndelegationResponseDto | null;
+  undelegation_response?: BabylonUndelegationResponseDto | null;
   /** The parameters version */
   params_version: number;
 }
 
-export interface DelegationInfoResponseDto {
+export interface BabylonDelegationInfoResponseDto {
   /** The BTC delegation information */
   btc_delegation: BtcDelegationDto;
 }
 
-export interface UnbondingTransactionDto {
+export interface BabylonUnbondingTransactionDto {
   txid: string;
   confirmed: boolean;
   broadcasted: boolean;
 }
 
-export interface GetStakingStatusResponseDto {
+export interface GetBabylonStakingStatusResponseDto {
   status: string;
   isRegistered: boolean;
   statusExplanation: string;
-  stakingTransaction: StakingTransactionDto;
-  delegationInfo: DelegationInfoResponseDto | null;
-  unbondingTransaction: UnbondingTransactionDto | null;
+  stakingTransaction: BabylonStakingTransactionDto;
+  delegationInfo: BabylonDelegationInfoResponseDto | null;
+  unbondingTransaction: BabylonUnbondingTransactionDto | null;
   /**
    * The type of registration (pre-stake or post-stake)
    * @example "pre-stake"
@@ -991,7 +991,7 @@ export interface GetStakingStatusResponseDto {
   unsignedStakingPsbt?: string;
 }
 
-export interface BuildUnbondingTransactionResponseDto {
+export interface BuildBabylonUnbondingTransactionResponseDto {
   /**
    * The partially signed Bitcoin transaction (PSBT) that needs to be signed by the staker
    * @example "70736274ff01007d020000000125e99b2..."
@@ -999,7 +999,7 @@ export interface BuildUnbondingTransactionResponseDto {
   unbondingPsbt: string;
 }
 
-export interface StakingTxRequestDto {
+export interface BabylonStakingTxRequestDto {
   /**
    * The transaction ID of the staking transaction
    * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
@@ -1007,7 +1007,7 @@ export interface StakingTxRequestDto {
   stakingTxId: string;
 }
 
-export interface SubmitUnbondingTransactionDto {
+export interface SubmitBabylonUnbondingTransactionDto {
   /**
    * The transaction ID of the staking transaction
    * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
@@ -1020,7 +1020,7 @@ export interface SubmitUnbondingTransactionDto {
   signedUnbondingTx: string;
 }
 
-export interface BuildWithdrawalTransactionResponseDto {
+export interface BuildBabylonWithdrawalTransactionResponseDto {
   /**
    * The unsigned withdrawal PSBT in hex format
    * @example "70736274ff0100..."
@@ -1033,7 +1033,7 @@ export interface BuildWithdrawalTransactionResponseDto {
   feeRate: number;
 }
 
-export interface BuildWithdrawalTransactionDto {
+export interface BuildBabylonWithdrawalTransactionDto {
   /**
    * The transaction ID of the staking transaction
    * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
@@ -1051,7 +1051,7 @@ export interface BuildWithdrawalTransactionDto {
   feeRate?: number;
 }
 
-export interface SubmitWithdrawalTransactionDto {
+export interface SubmitBabylonWithdrawalTransactionDto {
   /**
    * The transaction ID of the staking transaction
    * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
@@ -1069,7 +1069,7 @@ export interface SubmitWithdrawalTransactionDto {
   withdrawalType: "early_unbonded" | "timelock_expired" | "slashing";
 }
 
-export interface StakingParamsDto {
+export interface BabylonStakingParamsDto {
   /**
    * Minimum staking value in satoshis
    * @example 50000
@@ -1112,12 +1112,12 @@ export interface StakingParamsDto {
   isStakingOpen: boolean;
 }
 
-export interface GetStakingParamsResponseDto {
+export interface GetBabylonStakingParamsResponseDto {
   /** Current staking parameters */
-  params: StakingParamsDto;
+  params: BabylonStakingParamsDto;
 }
 
-export interface StakingDetailDto {
+export interface BabylonStakingDetailDto {
   /**
    * The staking transaction ID
    * @example "f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16"
@@ -1209,9 +1209,9 @@ export interface StakingDetailDto {
   isAvailable?: boolean;
 }
 
-export interface GetStakingDetailsResponseDto {
+export interface GetBabylonStakingDetailsResponseDto {
   /** List of staking details for the address */
-  stakingDetails: StakingDetailDto[];
+  stakingDetails: BabylonStakingDetailDto[];
   /**
    * Total amount staked across all transactions in satoshis
    * @example 500000
@@ -1234,7 +1234,7 @@ export interface GetStakingDetailsResponseDto {
   activeStakesCount: number;
 }
 
-export interface BuildPreStakeRegistrationResponseDto {
+export interface BuildBabylonPreStakeRegistrationResponseDto {
   /**
    * The unsigned staking transaction PSBT in hex format
    * @example "70736274ff01007d020000000125e99b2..."
@@ -1247,7 +1247,7 @@ export interface BuildPreStakeRegistrationResponseDto {
   stakingTxId: string;
 }
 
-export interface BuildPreStakeRegistrationDto {
+export interface BuildBabylonPreStakeRegistrationDto {
   /**
    * Public key in hex format (compressed or uncompressed)
    * @example "02a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943c2b752a68e2a47e247c7"
@@ -1274,7 +1274,7 @@ export interface BuildPreStakeRegistrationDto {
    */
   feeRate?: number;
   /** Specific UTXOs to use (optional) */
-  utxos?: UtxoDto[];
+  utxos?: BitcoinUtxoDto[];
   /**
    * Whether to automatically fund the transaction
    * @default false
@@ -1320,7 +1320,7 @@ export interface BuildBabylonPreStakeTransactionDto {
   babylonAddress: string;
 }
 
-export interface SubmitPreStakeRegistrationResponseDto {
+export interface SubmitBabylonPreStakeRegistrationResponseDto {
   /**
    * The Babylon transaction hash
    * @example "ABC123DEF456..."
@@ -1328,7 +1328,7 @@ export interface SubmitPreStakeRegistrationResponseDto {
   txId: string;
 }
 
-export interface SubmitPreStakeRegistrationDto {
+export interface SubmitBabylonPreStakeRegistrationDto {
   /**
    * The transaction ID of the staking transaction
    * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
@@ -1346,7 +1346,7 @@ export interface SubmitPreStakeRegistrationDto {
   signedBabylonTx?: string;
 }
 
-export interface FinalizePreStakeResponseDto {
+export interface FinalizeBabylonPreStakeResponseDto {
   /**
    * The Bitcoin transaction ID
    * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
@@ -1354,7 +1354,7 @@ export interface FinalizePreStakeResponseDto {
   txId: string;
 }
 
-export interface FinalizePreStakeDto {
+export interface FinalizeBabylonPreStakeDto {
   /**
    * The transaction ID of the staking transaction
    * @example "e7344f4673bc62cdbcd501c629feda83784bddd900a40dc088ec26241817576a"
@@ -1403,7 +1403,7 @@ export interface CardanoStakeAccountRewards {
   adaPrice: number;
 }
 
-export interface AddStakeAccountDto {
+export interface AddCardanoStakeAccountDto {
   /**
    * The stake account address to add to the system
    * @example "stake1u9klnfr0v4f2k3v2c0t4d0h3l2p8x9q6r7s8t9u0v1w2x3y4z5a6b7c8d9e0f"
@@ -1421,6 +1421,29 @@ export interface AddStakeAccountDto {
   label?: string;
 }
 
+export interface CardanoUtxo {
+  /**
+   * The transaction hash
+   * @example "0x1234567890abcdef..."
+   */
+  txHash: string;
+  /**
+   * The output index
+   * @example 0
+   */
+  outputIndex: number;
+  /**
+   * The amount of lovelace in the output
+   * @example "1000000"
+   */
+  lovelace: string;
+  /**
+   * The address of the output
+   * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
+   */
+  address: string;
+}
+
 export interface CardanoTransactionCraftingResponse {
   /**
    * The unsigned transaction in CBOR format
@@ -1436,12 +1459,12 @@ export interface CardanoTransactionCraftingResponse {
    * UTXOs being spent as part of the transaction
    * @example [{"txHash":"0x1234567890abcdef...","outputIndex":0,"lovelacee":"1000000","address":"addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"}]
    */
-  utxosIn: string[];
+  utxosIn: CardanoUtxo[];
   /**
    * UTXOs being created as change outputs
    * @example [{"txHash":"0x1234567890abcdef...","outputIndex":0,"lovelace":"1000000","address":"addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"}]
    */
-  utxosOut: string[];
+  utxosOut: CardanoUtxo[];
 }
 
 export interface CardanoRegisterStakeAddressDto {
@@ -1639,7 +1662,7 @@ export interface RegistrationStatusResponse {
   status: string;
 }
 
-export interface WalletChallengeResponse {
+export interface LsEthWalletChallengeResponse {
   /**
    * Message to be signed by the wallet
    * @example "Please sign this message to verify wallet ownership. Nonce: abc123def456"
@@ -1658,7 +1681,7 @@ export interface WalletChallengeResponse {
   expiresAt: string;
 }
 
-export interface WalletChallengeRequest {
+export interface LsEthWalletChallengeRequest {
   /**
    * Ethereum wallet address to verify ownership of
    * @example "0x742d35Cc6634C0532925a3b8D084FB0F26f01234"
@@ -1666,7 +1689,7 @@ export interface WalletChallengeRequest {
   address: string;
 }
 
-export interface WalletDto {
+export interface LsEthWalletDto {
   /** Wallet address */
   address: string;
   /** Whether the wallet is allowlisted */
@@ -1683,17 +1706,17 @@ export interface WalletDto {
   type: string;
 }
 
-export interface WalletVerifyResponse {
+export interface LsEthWalletVerifyResponse {
   /**
    * Indicates if wallet was successfully added
    * @example true
    */
   success: boolean;
   /** Wallet information from Alluvial */
-  wallet: WalletDto;
+  wallet: LsEthWalletDto;
 }
 
-export interface WalletVerifyRequest {
+export interface LsEthWalletVerifyRequest {
   /**
    * Ethereum wallet address being verified
    * @example "0x742d35Cc6634C0532925a3b8D084FB0F26f01234"
@@ -1711,12 +1734,12 @@ export interface WalletVerifyRequest {
   signature: string;
 }
 
-export interface ListWalletsResponse {
+export interface LsEthListWalletsResponse {
   /** Array of wallets for the user */
-  wallets: WalletDto[];
+  wallets: LsEthWalletDto[];
 }
 
-export interface ProtocolStatsResponse {
+export interface LsEthProtocolStatsResponse {
   /**
    * 7-day average staking reward rate
    * @example "3.5"
@@ -1825,7 +1848,7 @@ export interface LsEthRedeemDto {
   recipient: string;
 }
 
-export interface WalletBalanceResponse {
+export interface LsEthWalletBalanceResponse {
   /**
    * Wallet address
    * @example "0xc8cd785c6ba55d71a6530c08d1df7ecbf090299c"
@@ -1843,7 +1866,7 @@ export interface WalletBalanceResponse {
   blockNumber: number;
 }
 
-export interface RedeemRequestDto {
+export interface LsEthRedeemRequestDto {
   /**
    * The ID of the redeem request
    * @example 1234
@@ -1923,12 +1946,12 @@ export interface RedeemRequestDto {
   height: number;
 }
 
-export interface ListRedeemsResponse {
+export interface LsEthListRedeemsResponse {
   /** List of redemption requests */
-  redeems: RedeemRequestDto[];
+  redeems: LsEthRedeemRequestDto[];
 }
 
-export interface RedeemDetailsResponse {
+export interface LsEthRedeemDetailsResponse {
   /**
    * The ID of the redeem request
    * @example 1234
@@ -2013,7 +2036,7 @@ export interface RedeemDetailsResponse {
   customerId: string;
 }
 
-export interface RedeemProjectionResponse {
+export interface LsEthRedeemProjectionResponse {
   /**
    * Customer ID associated with this redemption
    * @example "67890abcdef"
@@ -2046,7 +2069,7 @@ export interface RedeemProjectionResponse {
   message: string;
 }
 
-export interface ClaimRedeemDto {
+export interface LsEthClaimRedeemDto {
   /**
    * The address that will send the transaction
    * @example "0x1234567890123456789012345678901234567890"
@@ -2069,7 +2092,7 @@ export interface ClaimRedeemDto {
   gasEstimateMultiplier?: number;
 }
 
-export interface WalletTransactionDto {
+export interface LsEthWalletTransactionDto {
   /**
    * ETH amount involved in the transaction
    * @example "1.5"
@@ -2107,9 +2130,9 @@ export interface WalletTransactionDto {
   transactionType: "DEPOSIT" | "REDEEM" | "CLAIM";
 }
 
-export interface WalletTransactionHistoryResponse {
+export interface LsEthWalletTransactionHistoryResponse {
   /** List of wallet transactions */
-  transactions: WalletTransactionDto[];
+  transactions: LsEthWalletTransactionDto[];
   /**
    * Cursor for next page of results
    * @example "eyJhZnRlciI6IjIwMjUtMDctMjkifQ=="
@@ -2117,7 +2140,7 @@ export interface WalletTransactionHistoryResponse {
   nextCursor?: string;
 }
 
-export interface AggregateActivityItem {
+export interface LsEthAggregateActivityItem {
   /** Type of activity item */
   type: "TRANSACTION" | "REDEMPTION";
   /**
@@ -2131,14 +2154,14 @@ export interface AggregateActivityItem {
    */
   walletAddress: string;
   /** Transaction data (only present when type is TRANSACTION) */
-  transaction?: WalletTransactionDto;
+  transaction?: LsEthWalletTransactionDto;
   /** Redemption data (only present when type is REDEMPTION) */
-  redemption?: RedeemRequestDto;
+  redemption?: LsEthRedeemRequestDto;
 }
 
-export interface AggregateActivityResponse {
+export interface LsEthAggregateActivityResponse {
   /** Array of activity items sorted by date (newest first) */
-  activities: AggregateActivityItem[];
+  activities: LsEthAggregateActivityItem[];
   /**
    * Total number of activity items
    * @example 25
@@ -2146,7 +2169,7 @@ export interface AggregateActivityResponse {
   totalCount: number;
 }
 
-export interface RedeemManagerInfoResponse {
+export interface LsEthRedeemManagerInfoResponse {
   /**
    * The cumulative sum of the redeem request heights
    * @example 1000
@@ -3438,14 +3461,14 @@ export class Api<
      * @description Get UTXOs for a given bitcoin address
      *
      * @tags Bitcoin
-     * @name GetAddressUtxos
+     * @name GetBitcoinAddressUtxos
      * @summary Get UTXOs for a given bitcoin address. Only available on testnet
      * @request GET:/bitcoin/utxos/{address}
      */
-    getAddressUtxos: (address: string, params: RequestParams = {}) =>
+    getBitcoinAddressUtxos: (address: string, params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: GetAddressUtxos[];
+          data: GetBitcoinAddressUtxos[];
         },
         any
       >({
@@ -3459,17 +3482,17 @@ export class Api<
      * @description Build a bitcoin staking transaction for use with the post-stake flow. Only available on testnet
      *
      * @tags Bitcoin
-     * @name BuildStakingTransaction
+     * @name BuildBabylonStakingTransaction
      * @summary Build a post-stake bitcoin staking transaction
      * @request POST:/bitcoin/buildStakingTransaction
      */
-    buildStakingTransaction: (
-      data: BuildStakingTransactionDto,
+    buildBabylonStakingTransaction: (
+      data: BuildBabylonStakingTransactionDto,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: BuildStakingTransactionResponseDto;
+          data: BuildBabylonStakingTransactionResponseDto;
         },
         any
       >({
@@ -3485,17 +3508,17 @@ export class Api<
      * @description Submit a signed staking transaction for broadcasting to the Bitcoin network using the post-stake flow. Only available on testnet
      *
      * @tags Bitcoin
-     * @name SubmitStakingTransaction
+     * @name SubmitBabylonStakingTransaction
      * @summary Broadcast a signed bitcoin staking transaction for use with the post-stake flow
      * @request POST:/bitcoin/submitStakingTransaction
      */
-    submitStakingTransaction: (
-      data: SubmitStakingTransactionDto,
+    submitBabylonStakingTransaction: (
+      data: SubmitBabylonStakingTransactionDto,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: TransactionResponseDto;
+          data: BitcoinTransactionResponseDto;
         },
         any
       >({
@@ -3511,17 +3534,17 @@ export class Api<
      * @description Get delegation payloads for a given staking transaction ID. Only available on testnet
      *
      * @tags Bitcoin
-     * @name GetDelegationPayloads
+     * @name GetBabylonDelegationPayloads
      * @summary Get delegation payloads
      * @request POST:/bitcoin/getDelegationPayloads
      */
-    getDelegationPayloads: (
-      data: GetDelegationPayloadsDto,
+    getBabylonDelegationPayloads: (
+      data: GetBabylonDelegationPayloadsDto,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: GetDelegationPayloadsResponseDto;
+          data: GetBabylonDelegationPayloadsResponseDto;
         },
         any
       >({
@@ -3537,17 +3560,17 @@ export class Api<
      * @description Build a babylon registration transaction for an existing stake as part of the post-stake flow. Only available on testnet
      *
      * @tags Bitcoin
-     * @name BuildRegistrationTransaction
+     * @name BuildBabylonRegistrationTransaction
      * @summary Build a post-stake babylon registration transaction
      * @request POST:/bitcoin/buildRegistrationTransaction
      */
-    buildRegistrationTransaction: (
-      data: BuildRegistrationTransactionDto,
+    buildBabylonRegistrationTransaction: (
+      data: BuildBabylonRegistrationTransactionDto,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: BuildRegistrationTransactionResponseDto;
+          data: BuildBabylonRegistrationTransactionResponseDto;
         },
         any
       >({
@@ -3563,14 +3586,17 @@ export class Api<
      * @description Get the status of a staking transaction. Only available on testnet
      *
      * @tags Bitcoin
-     * @name GetStakingStatus
+     * @name GetBabylonStakingStatus
      * @summary Get the status of a staking transaction
      * @request GET:/bitcoin/stakingStatus/{stakingTxId}
      */
-    getStakingStatus: (stakingTxId: string, params: RequestParams = {}) =>
+    getBabylonStakingStatus: (
+      stakingTxId: string,
+      params: RequestParams = {},
+    ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: GetStakingStatusResponseDto;
+          data: GetBabylonStakingStatusResponseDto;
         },
         any
       >({
@@ -3584,17 +3610,17 @@ export class Api<
      * @description Build an unbonding transaction PSBT. Only available on testnet
      *
      * @tags Bitcoin
-     * @name BuildUnbondingTransaction
+     * @name BuildBabylonUnbondingTransaction
      * @summary Build an unbonding transaction PSBT that needs to be signed by the staker.
      * @request POST:/bitcoin/buildUnbondingTransaction
      */
-    buildUnbondingTransaction: (
-      data: StakingTxRequestDto,
+    buildBabylonUnbondingTransaction: (
+      data: BabylonStakingTxRequestDto,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: BuildUnbondingTransactionResponseDto;
+          data: BuildBabylonUnbondingTransactionResponseDto;
         },
         any
       >({
@@ -3610,17 +3636,17 @@ export class Api<
      * @description Submit a staker-signed unbonding transaction PSBT. Only available on testnet
      *
      * @tags Bitcoin
-     * @name SubmitUnbondingTransaction
+     * @name SubmitBabylonUnbondingTransaction
      * @summary Submit a staker-signed unbonding transaction PSBT for processing with covenant signatures and broadcasting.
      * @request POST:/bitcoin/submitUnbondingTransaction
      */
-    submitUnbondingTransaction: (
-      data: SubmitUnbondingTransactionDto,
+    submitBabylonUnbondingTransaction: (
+      data: SubmitBabylonUnbondingTransactionDto,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: TransactionResponseDto;
+          data: BitcoinTransactionResponseDto;
         },
         any
       >({
@@ -3636,17 +3662,17 @@ export class Api<
      * @description Build a withdrawal transaction PSBT for withdrawing funds from unbonded or expired stakes. Only available on testnet
      *
      * @tags Bitcoin
-     * @name BuildWithdrawalTransaction
+     * @name BuildBabylonWithdrawalTransaction
      * @summary Build a withdrawal transaction PSBT
      * @request POST:/bitcoin/buildWithdrawalTransaction
      */
-    buildWithdrawalTransaction: (
-      data: BuildWithdrawalTransactionDto,
+    buildBabylonWithdrawalTransaction: (
+      data: BuildBabylonWithdrawalTransactionDto,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: BuildWithdrawalTransactionResponseDto;
+          data: BuildBabylonWithdrawalTransactionResponseDto;
         },
         any
       >({
@@ -3662,17 +3688,17 @@ export class Api<
      * @description Submit a signed withdrawal transaction for broadcasting to the Bitcoin network. Only available on testnet
      *
      * @tags Bitcoin
-     * @name SubmitWithdrawalTransaction
+     * @name SubmitBabylonWithdrawalTransaction
      * @summary Submit a signed withdrawal transaction for broadcasting to the Bitcoin network
      * @request POST:/bitcoin/submitWithdrawalTransaction
      */
-    submitWithdrawalTransaction: (
-      data: SubmitWithdrawalTransactionDto,
+    submitBabylonWithdrawalTransaction: (
+      data: SubmitBabylonWithdrawalTransactionDto,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: TransactionResponseDto;
+          data: BitcoinTransactionResponseDto;
         },
         any
       >({
@@ -3688,14 +3714,14 @@ export class Api<
      * @description Get current staking parameters including confirmation requirements. Only available on testnet
      *
      * @tags Bitcoin
-     * @name GetStakingParams
+     * @name GetBabylonStakingParams
      * @summary Get current babylon staking protocol parameters
      * @request GET:/bitcoin/stakingParams
      */
-    getStakingParams: (params: RequestParams = {}) =>
+    getBabylonStakingParams: (params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: GetStakingParamsResponseDto;
+          data: GetBabylonStakingParamsResponseDto;
         },
         any
       >({
@@ -3709,11 +3735,11 @@ export class Api<
      * @description Get all staking details for your account. Only available on testnet
      *
      * @tags Bitcoin
-     * @name GetStakingDetails
+     * @name GetBabylonStakingDetails
      * @summary Get all staking details for your account
      * @request GET:/bitcoin/stakingDetails
      */
-    getStakingDetails: (
+    getBabylonStakingDetails: (
       query?: {
         /** Bitcoin address */
         address?: string;
@@ -3724,7 +3750,7 @@ export class Api<
     ) =>
       this.request<
         UtilRequiredKeys<PaginatedApiResponseBase, "data"> & {
-          data: GetStakingDetailsResponseDto;
+          data: GetBabylonStakingDetailsResponseDto;
         },
         any
       >({
@@ -3739,17 +3765,17 @@ export class Api<
      * @description Build an unsigned pre-stake staking transaction PSBT that needs to be signed by the staker. Only available on testnet
      *
      * @tags Bitcoin
-     * @name BuildPreStakeStakingTransaction
+     * @name BuildBabylonPreStakeStakingTransaction
      * @summary Build an unsigned pre-stake staking transaction PSBT
      * @request POST:/bitcoin/buildPreStakeStakingTransaction
      */
-    buildPreStakeStakingTransaction: (
-      data: BuildPreStakeRegistrationDto,
+    buildBabylonPreStakeStakingTransaction: (
+      data: BuildBabylonPreStakeRegistrationDto,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: BuildPreStakeRegistrationResponseDto;
+          data: BuildBabylonPreStakeRegistrationResponseDto;
         },
         any
       >({
@@ -3765,17 +3791,17 @@ export class Api<
      * @description Get delegation payloads for pre-stake using the unsigned staking transaction. Only available on testnet
      *
      * @tags Bitcoin
-     * @name GetDelegationPayloadsPreStake
+     * @name GetBabylonDelegationPayloadsPreStake
      * @summary Get delegation payloads for pre-stake
      * @request POST:/bitcoin/getDelegationPayloadsPreStake
      */
-    getDelegationPayloadsPreStake: (
-      data: GetDelegationPayloadsDto,
+    getBabylonDelegationPayloadsPreStake: (
+      data: GetBabylonDelegationPayloadsDto,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: GetDelegationPayloadsResponseDto;
+          data: GetBabylonDelegationPayloadsResponseDto;
         },
         any
       >({
@@ -3817,17 +3843,17 @@ export class Api<
      * @description Submit a signed pre-stake registration to Babylon for covenant verification. Only available on testnet
      *
      * @tags Bitcoin
-     * @name SubmitPreStakeRegistration
+     * @name SubmitBabylonPreStakeRegistration
      * @summary Submit a signed pre-stake registration to Babylon for covenant verification
      * @request POST:/bitcoin/submitPreStakeRegistration
      */
-    submitPreStakeRegistration: (
-      data: SubmitPreStakeRegistrationDto,
+    submitBabylonPreStakeRegistration: (
+      data: SubmitBabylonPreStakeRegistrationDto,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: SubmitPreStakeRegistrationResponseDto;
+          data: SubmitBabylonPreStakeRegistrationResponseDto;
         },
         any
       >({
@@ -3843,14 +3869,17 @@ export class Api<
      * @description Finalize a verified pre-stake by broadcasting the Bitcoin staking transaction. Only available on testnet
      *
      * @tags Bitcoin
-     * @name FinalizePreStake
+     * @name FinalizeBabylonPreStake
      * @summary Broadcast and finalize a verified pre-stake Bitcoin staking transaction
      * @request POST:/bitcoin/finalizePreStake
      */
-    finalizePreStake: (data: FinalizePreStakeDto, params: RequestParams = {}) =>
+    finalizeBabylonPreStake: (
+      data: FinalizeBabylonPreStakeDto,
+      params: RequestParams = {},
+    ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: FinalizePreStakeResponseDto;
+          data: FinalizeBabylonPreStakeResponseDto;
         },
         any
       >({
@@ -3962,7 +3991,7 @@ export class Api<
      * @request POST:/cardano/stake/account
      */
     addCardanoStakeAccount: (
-      data: AddStakeAccountDto,
+      data: AddCardanoStakeAccountDto,
       params: RequestParams = {},
     ) =>
       this.request<
@@ -4253,12 +4282,12 @@ export class Api<
      * @request POST:/lsEth/wallet/add/challenge
      */
     addLsEthWalletChallenge: (
-      data: WalletChallengeRequest,
+      data: LsEthWalletChallengeRequest,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: WalletChallengeResponse;
+          data: LsEthWalletChallengeResponse;
         },
         any
       >({
@@ -4279,12 +4308,12 @@ export class Api<
      * @request POST:/lsEth/wallet/add/verify
      */
     addLsEthWalletVerify: (
-      data: WalletVerifyRequest,
+      data: LsEthWalletVerifyRequest,
       params: RequestParams = {},
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: WalletVerifyResponse;
+          data: LsEthWalletVerifyResponse;
         },
         any
       >({
@@ -4334,7 +4363,7 @@ export class Api<
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: ListWalletsResponse;
+          data: LsEthListWalletsResponse;
         },
         any
       >({
@@ -4362,7 +4391,7 @@ export class Api<
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: ProtocolStatsResponse;
+          data: LsEthProtocolStatsResponse;
         },
         any
       >({
@@ -4436,7 +4465,7 @@ export class Api<
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: WalletBalanceResponse;
+          data: LsEthWalletBalanceResponse;
         },
         any
       >({
@@ -4464,7 +4493,7 @@ export class Api<
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: ListRedeemsResponse;
+          data: LsEthListRedeemsResponse;
         },
         any
       >({
@@ -4486,7 +4515,7 @@ export class Api<
     getLsEthRedeemDetails: (id: number, params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: RedeemDetailsResponse;
+          data: LsEthRedeemDetailsResponse;
         },
         any
       >({
@@ -4507,7 +4536,7 @@ export class Api<
     getLsEthRedeemProjection: (id: number, params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: RedeemProjectionResponse;
+          data: LsEthRedeemProjectionResponse;
         },
         any
       >({
@@ -4526,7 +4555,7 @@ export class Api<
      * @request POST:/lsEth/txcrafting/claim
      */
     craftLsEthClaimRedeemTx: (
-      data: ClaimRedeemDto,
+      data: LsEthClaimRedeemDto,
       params: RequestParams = {},
     ) =>
       this.request<
@@ -4580,7 +4609,7 @@ export class Api<
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: WalletTransactionHistoryResponse;
+          data: LsEthWalletTransactionHistoryResponse;
         },
         any
       >({
@@ -4608,7 +4637,7 @@ export class Api<
     ) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: AggregateActivityResponse;
+          data: LsEthAggregateActivityResponse;
         },
         any
       >({
@@ -4630,7 +4659,7 @@ export class Api<
     getLsEthRedeemManagerInfo: (params: RequestParams = {}) =>
       this.request<
         UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: RedeemManagerInfoResponse;
+          data: LsEthRedeemManagerInfoResponse;
         },
         any
       >({
