@@ -1562,6 +1562,50 @@ export interface CardanoStakingRewardsWithdrawalDto {
   amountLovelace: string;
 }
 
+export interface CardanoTransactionSubmissionResponse {
+  /**
+   * The transaction hash of the submitted transaction
+   * @example "0x1234567890abcdef..."
+   */
+  txHash: string;
+}
+
+export interface SubmitCardanoTransactionDto {
+  /**
+   * The signed transaction in CBOR hex format
+   * @example "84a50081825820..."
+   */
+  signedTx: string;
+}
+
+export interface CardanoTransactionStatusResponse {
+  /**
+   * The transaction hash of the submitted transaction
+   * @example "0x1234567890abcdef..."
+   */
+  txHash: string;
+  /**
+   * The block number of the transaction
+   * @example 123123123
+   */
+  block: number;
+  /**
+   * The block number of the transaction
+   * @example 1635505891
+   */
+  blockTime: number;
+  /**
+   * The slot number of the transaction
+   * @example 42000000
+   */
+  slot: number;
+  /**
+   * The fees of the transaction
+   * @example 1000000
+   */
+  fees: string;
+}
+
 export interface WebsiteDataPrices {
   solPrice: number;
   ethPrice: number;
@@ -4009,7 +4053,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for registering a Cardano stake address
+     * @description Craft a transaction for registering a Cardano stake address This will deposit 2 ADA from the utxoAddress into the Stake Address, which is required by the protocol ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress)***
      *
      * @tags Cardano
      * @name CraftCardanoRegisterStakeAddressTx
@@ -4035,7 +4079,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for deregistering a Cardano stake address
+     * @description Craft a transaction for deregistering a Cardano stake address ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress) as well as your Stake Key***
      *
      * @tags Cardano
      * @name CraftCardanoDeregisterStakeAddressTx
@@ -4061,7 +4105,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for delegating stake to a Cardano stake pool
+     * @description Craft a transaction for delegating stake to a Cardano stake pool ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress) as well as your Stake Key***
      *
      * @tags Cardano
      * @name CraftCardanoDelegateStakeTx
@@ -4087,7 +4131,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for registering a stake address and delegating to a stake pool in a single transaction
+     * @description Craft a transaction for registering and delegating stake to a Cardano stake pool in a single transaction This will deposit 2 ADA from the utxoAddress into the Stake Address, which is required by the protocol ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress) as well as your Stake Key***
      *
      * @tags Cardano
      * @name CraftCardanoRegisterAndDelegateTx
@@ -4113,7 +4157,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for withdrawing stake rewards
+     * @description Craft a transaction for withdrawing rewards from your Stake Address ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress) as well as your Stake Key***
      *
      * @tags Cardano
      * @name CraftCardanoStakingRewardsWithdrawalTx
@@ -4134,6 +4178,53 @@ export class Api<
         method: "POST",
         body: data,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Submit a signed Cardano transaction to the network
+     *
+     * @tags Cardano
+     * @name SubmitCardanoTransaction
+     * @summary Submit Signed Cardano Transaction
+     * @request POST:/cardano/submitSignedTx
+     */
+    submitCardanoTransaction: (
+      data: SubmitCardanoTransactionDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CardanoTransactionSubmissionResponse;
+        },
+        any
+      >({
+        path: `/cardano/submitSignedTx`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get the status of a Cardano transaction by the tx hash
+     *
+     * @tags Cardano
+     * @name GetCardanoTransactionStatus
+     * @summary Get Cardano Transaction Status
+     * @request GET:/cardano/txStatus/{txHash}
+     */
+    getCardanoTransactionStatus: (txHash: string, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CardanoTransactionStatusResponse;
+        },
+        any
+      >({
+        path: `/cardano/txStatus/${txHash}`,
+        method: "GET",
         format: "json",
         ...params,
       }),
