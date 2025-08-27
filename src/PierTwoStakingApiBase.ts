@@ -1562,6 +1562,50 @@ export interface CardanoStakingRewardsWithdrawalDto {
   amountLovelace: string;
 }
 
+export interface CardanoTransactionSubmissionResponse {
+  /**
+   * The transaction hash of the submitted transaction
+   * @example "0x1234567890abcdef..."
+   */
+  txHash: string;
+}
+
+export interface SubmitCardanoTransactionDto {
+  /**
+   * The signed transaction in CBOR hex format
+   * @example "84a50081825820..."
+   */
+  signedTx: string;
+}
+
+export interface CardanoTransactionStatusResponse {
+  /**
+   * The transaction hash of the submitted transaction
+   * @example "0x1234567890abcdef..."
+   */
+  txHash: string;
+  /**
+   * The block number of the transaction
+   * @example 123123123
+   */
+  block: number;
+  /**
+   * The block number of the transaction
+   * @example 1635505891
+   */
+  blockTime: number;
+  /**
+   * The slot number of the transaction
+   * @example 42000000
+   */
+  slot: number;
+  /**
+   * The fees of the transaction
+   * @example 1000000
+   */
+  fees: string;
+}
+
 export interface WebsiteDataPrices {
   solPrice: number;
   ethPrice: number;
@@ -4134,6 +4178,53 @@ export class Api<
         method: "POST",
         body: data,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Submit a signed Cardano transaction to the network
+     *
+     * @tags Cardano
+     * @name SubmitCardanoTransaction
+     * @summary Submit Signed Cardano Transaction
+     * @request POST:/cardano/submitSignedTx
+     */
+    submitCardanoTransaction: (
+      data: SubmitCardanoTransactionDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CardanoTransactionSubmissionResponse;
+        },
+        any
+      >({
+        path: `/cardano/submitSignedTx`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get the status of a Cardano transaction by the tx hash
+     *
+     * @tags Cardano
+     * @name GetCardanoTransactionStatus
+     * @summary Get Cardano Transaction Status
+     * @request GET:/cardano/txStatus/{txHash}
+     */
+    getCardanoTransactionStatus: (txHash: string, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CardanoTransactionStatusResponse;
+        },
+        any
+      >({
+        path: `/cardano/txStatus/${txHash}`,
+        method: "GET",
         format: "json",
         ...params,
       }),
