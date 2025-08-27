@@ -4053,7 +4053,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for registering a Cardano stake address
+     * @description Craft a transaction for registering a Cardano stake address This will deposit 2 ADA from the utxoAddress into the Stake Address, which is required by the protocol ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress)***
      *
      * @tags Cardano
      * @name CraftCardanoRegisterStakeAddressTx
@@ -4079,7 +4079,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for deregistering a Cardano stake address
+     * @description Craft a transaction for deregistering a Cardano stake address ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress) as well as your Stake Key***
      *
      * @tags Cardano
      * @name CraftCardanoDeregisterStakeAddressTx
@@ -4105,7 +4105,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for delegating stake to a Cardano stake pool
+     * @description Craft a transaction for delegating stake to a Cardano stake pool ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress) as well as your Stake Key***
      *
      * @tags Cardano
      * @name CraftCardanoDelegateStakeTx
@@ -4131,7 +4131,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for registering a stake address and delegating to a stake pool in a single transaction
+     * @description Craft a transaction for registering and delegating stake to a Cardano stake pool in a single transaction This will deposit 2 ADA from the utxoAddress into the Stake Address, which is required by the protocol ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress) as well as your Stake Key***
      *
      * @tags Cardano
      * @name CraftCardanoRegisterAndDelegateTx
@@ -4157,7 +4157,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for withdrawing stake rewards
+     * @description Craft a transaction for withdrawing rewards from your Stake Address ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress) as well as your Stake Key***
      *
      * @tags Cardano
      * @name CraftCardanoStakingRewardsWithdrawalTx
