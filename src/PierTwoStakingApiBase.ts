@@ -1483,6 +1483,16 @@ export interface CardanoRegisterStakeAddressDto {
    * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
    */
   changeAddress?: string;
+  /**
+   * Arbitrary reference/grouping
+   * @example "Test Fund"
+   */
+  reference: string;
+  /**
+   * Optional secondary label for this particular stake position
+   * @example "Balance Sheet Stake"
+   */
+  label?: string;
 }
 
 export interface CardanoDeregisterStakeAddressDto {
@@ -1519,6 +1529,16 @@ export interface CardanoDelegateStakeDto {
    * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
    */
   changeAddress?: string;
+  /**
+   * Arbitrary reference/grouping
+   * @example "Test Fund"
+   */
+  reference: string;
+  /**
+   * Optional secondary label for this particular stake position
+   * @example "Balance Sheet Stake"
+   */
+  label?: string;
 }
 
 export interface CardanoRegisterAndDelegateDto {
@@ -1537,6 +1557,16 @@ export interface CardanoRegisterAndDelegateDto {
    * @example "addr1qdzmqvfdnxsn4a3hd57x435madswynt4hqw8n7f2pdq05g4995re"
    */
   changeAddress?: string;
+  /**
+   * Arbitrary reference/grouping
+   * @example "Test Fund"
+   */
+  reference: string;
+  /**
+   * Optional secondary label for this particular stake position
+   * @example "Balance Sheet Stake"
+   */
+  label?: string;
 }
 
 export interface CardanoStakingRewardsWithdrawalDto {
@@ -1663,6 +1693,7 @@ export interface PierTwoBitcoinInfo {
 
 export interface PierTwoCardanoInfo {
   network: string;
+  defaultPoolId: string;
 }
 
 export interface PierTwoInfo {
@@ -4053,7 +4084,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for registering a Cardano stake address This will deposit 2 ADA from the utxoAddress into the Stake Address, which is required by the protocol ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress)***
+     * @description Craft a transaction for registering a Cardano stake address and add it to your account The stake account will be automatically added to your account for tracking. This will deposit 2 ADA from the utxoAddress into the Stake Address, which is required by the protocol. ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress)***
      *
      * @tags Cardano
      * @name CraftCardanoRegisterStakeAddressTx
@@ -4105,7 +4136,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for delegating stake to a Cardano stake pool ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress) as well as your Stake Key***
+     * @description Craft a transaction for delegating stake to a Cardano stake pool and add it to your account The stake account will be automatically added to your account for tracking. ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress) as well as your Stake Key***
      *
      * @tags Cardano
      * @name CraftCardanoDelegateStakeTx
@@ -4131,7 +4162,7 @@ export class Api<
       }),
 
     /**
-     * @description Craft a transaction for registering and delegating stake to a Cardano stake pool in a single transaction This will deposit 2 ADA from the utxoAddress into the Stake Address, which is required by the protocol ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress) as well as your Stake Key***
+     * @description Craft a transaction for registering and delegating stake to a Cardano stake pool in a single transaction and add it to your account The stake account will be automatically added to your account for tracking. This will deposit 2 ADA from the utxoAddress into the Stake Address, which is required by the protocol. ***This transaction must be signed by the owner of the UTXO's being spent into this transaction (utxoAddress) as well as your Stake Key***
      *
      * @tags Cardano
      * @name CraftCardanoRegisterAndDelegateTx
