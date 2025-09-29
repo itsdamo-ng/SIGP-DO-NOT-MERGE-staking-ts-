@@ -12,6 +12,68 @@
 
 type UtilRequiredKeys<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
+export interface ApiResponseBase {
+  data: object;
+  message?: string;
+}
+
+export interface AuthorizedEmail {
+  /** @example "myteammember@piertwo.com" */
+  emailAddress: string;
+}
+
+export interface GetAccountResponse {
+  /** @example "Pierre Toosen" */
+  customerName: string;
+  /** @example "Pier Two" */
+  companyName: string;
+  /** @example "staking@piertwo.com" */
+  emailAddress: string;
+  /**
+   * Status of your automatically generated mnemonic. This status must be ACTIVE before you can request a validator
+   * @example "ACTIVE"
+   */
+  mnemonicStatus: string;
+  /**
+   * Status of the accounts KYC/KYB application
+   * @example "KYC_PENDING"
+   */
+  kycStatus: string;
+  /**
+   * Details of agreed terms and conditions
+   * @example {"applicableTerms":"general","agreedTerms":{"29-05-2024":"2024-08-19T22:35:52.622Z"}}
+   */
+  termsAndConditions: object;
+  authorizedLogins: AuthorizedEmail[];
+}
+
+export interface ApiRoles {
+  /** Full access to all operations */
+  admin?: boolean;
+  /** Access to everything except team member management and API key management */
+  staker?: boolean;
+  /** Read-only access across all staking networks */
+  reader?: boolean;
+}
+
+export interface GetApiKeyDto {
+  /** @example "Default API Key" */
+  name: string;
+  /** @example "0b381d39-43b4-480f-b3c9-f3ff3d19cb0a" */
+  key: string;
+  /** @format date-time */
+  deletedAt?: string;
+  roles: ApiRoles;
+}
+
+export interface CreateApiKeyDto {
+  /** @example "Default API Key" */
+  name: string;
+  roles?: ApiRoles;
+}
+
+export type CustomerSummary = object;
+
 export interface PaginationData {
   totalCount: number;
   pageSize: number;
@@ -43,11 +105,6 @@ export interface SolanaStakeAccount {
   performanceTotal: string;
   performance30d: string;
   performance7d: string;
-}
-
-export interface ApiResponseBase {
-  data: object;
-  message?: string;
 }
 
 export interface SolanaTransactionSignature {
@@ -125,50 +182,6 @@ export interface SolanaStakingNetworkInfo {
   avgInflationRewardRate: number;
   slotIndex: number;
   slotsInEpoch: number;
-}
-
-export interface AuthorizedEmail {
-  /** @example "myteammember@piertwo.com" */
-  emailAddress: string;
-}
-
-export interface GetAccountResponse {
-  /** @example "Pierre Toosen" */
-  customerName: string;
-  /** @example "Pier Two" */
-  companyName: string;
-  /** @example "staking@piertwo.com" */
-  emailAddress: string;
-  /**
-   * Status of your automatically generated mnemonic. This status must be ACTIVE before you can request a validator
-   * @example "ACTIVE"
-   */
-  mnemonicStatus: string;
-  /**
-   * Status of the accounts KYC/KYB application
-   * @example "KYC_PENDING"
-   */
-  kycStatus: string;
-  /**
-   * Details of agreed terms and conditions
-   * @example {"applicableTerms":"general","agreedTerms":{"29-05-2024":"2024-08-19T22:35:52.622Z"}}
-   */
-  termsAndConditions: object;
-  authorizedLogins: AuthorizedEmail[];
-}
-
-export interface GetApiKeyDto {
-  /** @example "Default API Key" */
-  name: string;
-  /** @example "0b381d39-43b4-480f-b3c9-f3ff3d19cb0a" */
-  key: string;
-  /** @format date-time */
-  deletedAt?: string;
-}
-
-export interface CreateApiKeyDto {
-  /** @example "Default API Key" */
-  name: string;
 }
 
 export interface StakeDetails {
@@ -2513,7 +2526,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title Pier Two Staking API
- * @version 1.0.97-mainnet
+ * @version 1.0.103-main-mainnet
  * @baseUrl https://gw-1.api.piertwo.io
  * @contact
  *
@@ -2522,6 +2535,121 @@ export class HttpClient<SecurityDataType = unknown> {
 export class Api<
   SecurityDataType extends unknown,
 > extends HttpClient<SecurityDataType> {
+  account = {
+    /**
+     * @description Returns basic account details such as name, email address, KYC status, etc.
+     *
+     * @tags Account
+     * @name GetAccount
+     * @summary Get basic account details
+     * @request GET:/account
+     */
+    getAccount: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetAccountResponse;
+        },
+        any
+      >({
+        path: `/account`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns all api keys for your account, optionally including revoked keys.
+     *
+     * @tags Account
+     * @name GetApiKeys
+     * @summary Get API keys
+     * @request GET:/account/apikeys
+     */
+    getApiKeys: (
+      query?: {
+        /** Anything except 'true' will be considered `false`. */
+        includeRevokedKeys?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetApiKeyDto[];
+        },
+        any
+      >({
+        path: `/account/apikeys`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Add a new api key for your account with a specified name.
+     *
+     * @tags Account
+     * @name AddNewApiKey
+     * @summary Create a new API key
+     * @request POST:/account/apikeys
+     */
+    addNewApiKey: (data: CreateApiKeyDto, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetApiKeyDto;
+        },
+        any
+      >({
+        path: `/account/apikeys`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Revoke an api key for your account.
+     *
+     * @tags Account
+     * @name RevokeApiKey
+     * @summary Revoke an API key
+     * @request PUT:/account/apikeys/{key}
+     */
+    revokeApiKey: (key: string, params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: GetApiKeyDto;
+        },
+        any
+      >({
+        path: `/account/apikeys/${key}`,
+        method: "PUT",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns detailed summary of stake positions, known addresses, and rewards
+     *
+     * @tags Account
+     * @name GetAccountSummary
+     * @summary Get account summary
+     * @request GET:/account/summary
+     */
+    getAccountSummary: (params: RequestParams = {}) =>
+      this.request<
+        UtilRequiredKeys<ApiResponseBase, "data"> & {
+          data: CustomerSummary;
+        },
+        any
+      >({
+        path: `/account/summary`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+  };
   solana = {
     /**
      * @description Returns the details of Solana staking positions for your account.
@@ -2692,100 +2820,6 @@ export class Api<
       >({
         path: `/solana/stake/networkInfo`,
         method: "GET",
-        format: "json",
-        ...params,
-      }),
-  };
-  account = {
-    /**
-     * @description Returns basic account details such as name, email address, KYC status, etc.
-     *
-     * @tags Account
-     * @name GetAccount
-     * @summary Get basic account details
-     * @request GET:/account
-     */
-    getAccount: (params: RequestParams = {}) =>
-      this.request<
-        UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: GetAccountResponse;
-        },
-        any
-      >({
-        path: `/account`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Returns all api keys for your account, optionally including revoked keys.
-     *
-     * @tags Account
-     * @name GetApiKeys
-     * @summary Get API keys
-     * @request GET:/account/apikeys
-     */
-    getApiKeys: (
-      query?: {
-        /** Anything except 'true' will be considered `false`. */
-        includeRevokedKeys?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<
-        UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: GetApiKeyDto[];
-        },
-        any
-      >({
-        path: `/account/apikeys`,
-        method: "GET",
-        query: query,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Add a new api key for your account with a specified name.
-     *
-     * @tags Account
-     * @name AddNewApiKey
-     * @summary Create a new API key
-     * @request POST:/account/apikeys
-     */
-    addNewApiKey: (data: CreateApiKeyDto, params: RequestParams = {}) =>
-      this.request<
-        UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: GetApiKeyDto;
-        },
-        any
-      >({
-        path: `/account/apikeys`,
-        method: "POST",
-        body: data,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Revoke an api key for your account.
-     *
-     * @tags Account
-     * @name RevokeApiKey
-     * @summary Revoke an API key
-     * @request PUT:/account/apikeys/{key}
-     */
-    revokeApiKey: (key: string, params: RequestParams = {}) =>
-      this.request<
-        UtilRequiredKeys<ApiResponseBase, "data"> & {
-          data: GetApiKeyDto;
-        },
-        any
-      >({
-        path: `/account/apikeys/${key}`,
-        method: "PUT",
         format: "json",
         ...params,
       }),
